@@ -1,3 +1,4 @@
+package ch.epfl.javass.bits;
 //package ch.epfl.javass.bits;
 
 import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;

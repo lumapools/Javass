@@ -1,3 +1,4 @@
+package ch.epfl.javass;
 //package ch.epfl.javass.jass;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

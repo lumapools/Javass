@@ -26,6 +26,7 @@ public final class JassGame {
     private TurnState turnState;
     private PlayerId firstPlayer;
     private Color trump;
+    private boolean alreadySaid = false; //pour faire le setWinningTeam qu'une seule fois
     
     /**
      * Constructeur qui construit une partie de Jass
@@ -51,31 +52,37 @@ public final class JassGame {
      * @return (boolean)  vrai ssi la partie est terminée
      */
     public boolean isGameOver() {
-        return turnState.score().totalPoints(TeamId.TEAM_1) >= Jass.WINNING_POINTS || turnState.score().totalPoints(TeamId.TEAM_2) >= Jass.WINNING_POINTS;
+        for (TeamId t: TeamId.ALL) {
+            if(turnState.score().totalPoints(t) >= Jass.WINNING_POINTS) {
+                if(!alreadySaid) {
+                    setWinningTeam(t);
+                    alreadySaid = true;
+                }
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
      * Cette méthode fait avancer l'état du jeu jusqu'à la fin du prochain pli, ou ne fait rien si la partie est terminée
      */
     public void advanceToEndOfNextTrick() {
-        if(isGameOver()) {
-            return;
-        }
         if(turnState.packedScore() == 0L && turnState.packedUnplayedCards() == 0L && turnState.packedTrick() == 0) {
             shuffleDeckAndDistribute();
             startNewGame();
         }else {
             turnState = turnState.withTrickCollected();
             updateScore();
-            updateTrick();
+            
         }
         if(isGameOver()) {
-            
         } else {
             if(turnState.isTerminal()) {
                 shuffleDeckAndDistribute();
                 startNewTurn();
             }
+            updateTrick();
             playerPlays();
         }
     }
@@ -97,7 +104,11 @@ public final class JassGame {
     
     private void startNewTurn() {
         chooseAndSetTrump();
-        turnState = TurnState.initial(trump, turnState.score(), PlayerId.ALL.get((firstPlayer.ordinal()+1)%4));
+        for(PlayerId pId: PlayerId.ALL) {
+            updateHand(pId);
+        }
+        firstPlayer = PlayerId.ALL.get((firstPlayer.ordinal()+1)%4);
+        turnState = TurnState.initial(trump, turnState.score().nextTurn(), firstPlayer);
     }
     
     private void startNewGame() {
@@ -108,8 +119,10 @@ public final class JassGame {
                  firstPlayer = e.getKey();
         }
         for(PlayerId pId: PlayerId.ALL) {
+            updateHand(pId);
             players.get(pId).setTrump(trump);
         }
+        updateScore();
         turnState = TurnState.initial(trump, Score.INITIAL, firstPlayer);
     }
     
@@ -145,5 +158,11 @@ public final class JassGame {
     
     private void chooseAndSetTrump() {
         trump = Color.ALL.get(trumpRng.nextInt(4));
+    }
+    
+    private void setWinningTeam(TeamId t) {
+        for(PlayerId pId: PlayerId.ALL) {
+          players.get(pId).setWinningTeam(t);
+      }
     }
 }
