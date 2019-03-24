@@ -362,6 +362,16 @@ public final class PackedTrick {
     }
     
     /**
+     * 
+     * @param pkTrick
+     * @return
+     */
+    public static String toBinaryString(int pkTrick) {
+        return String.format("%32s",Long.toBinaryString(pkTrick)).replace(" ", "0").
+                replaceAll("^(..)(..)(....)(......)(......)(......)(......)","$1_$2_$3_$4_$5_$6_$7");
+    }
+    
+    /**
      * Retourne une représentation textuelle du pli
      * @param pkTrick (int)
      *          pli empaqueté
@@ -369,7 +379,7 @@ public final class PackedTrick {
      */
     public static String toString(int pkTrick) {
         assert(isValid(pkTrick));
-        String representation =  "(" +  "Tour : " + index(pkTrick) + ", ";
+        String representation =  "Started by: " + player(pkTrick, 0) + "(" +  "Tour : " + index(pkTrick) + ", ";
         for(int i = 0; i<size(pkTrick); ++i) {
             representation += PackedCard.toString(card(pkTrick, i)) + ", ";
         }

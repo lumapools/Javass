@@ -46,7 +46,7 @@ public final class PrintingPlayer implements Player{
     
     @Override
     public void updateTrick(Trick newTrick) {
-        System.out.println("Trick " + newTrick.index() + ", started by " + newTrick.player(0).name() + " : " + newTrick.toString());
+        System.out.println("Trick: " + newTrick);
     }
     
     @Override

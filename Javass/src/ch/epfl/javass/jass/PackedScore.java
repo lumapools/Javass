@@ -210,8 +210,13 @@ public final class PackedScore {
      * @return(String) (plis, points partie courante, gamePoints, totalPoints)
      */
     public static String toString(long pkScore) {
-        return "(" + turnTricks(pkScore, TeamId.TEAM_1) + "," + turnPoints(pkScore, TeamId.TEAM_1) + "," + gamePoints(pkScore, TeamId.TEAM_1)
-            + "," + totalPoints(pkScore, TeamId.TEAM_1) + ")/(" + turnTricks(pkScore, TeamId.TEAM_2) + "," + turnPoints(pkScore, TeamId.TEAM_2)
-            + "," + gamePoints(pkScore, TeamId.TEAM_2) + "," + totalPoints(pkScore, TeamId.TEAM_2) + ")";
+        return "(" + turnTricks(pkScore, TeamId.TEAM_1) + "," + 
+                     turnPoints(pkScore, TeamId.TEAM_1) + "," + 
+        		     gamePoints(pkScore, TeamId.TEAM_1) + "," + 
+                     totalPoints(pkScore, TeamId.TEAM_1) + ")/(" + 
+        		     turnTricks(pkScore, TeamId.TEAM_2) + "," + 
+                     turnPoints(pkScore, TeamId.TEAM_2) + "," + 
+        		     gamePoints(pkScore, TeamId.TEAM_2) + "," + 
+                     totalPoints(pkScore, TeamId.TEAM_2) + ")";
     }
 }

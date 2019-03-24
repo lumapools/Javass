@@ -13,6 +13,8 @@ public final class MctsPlayer implements Player{
     private long rngSeed;
     private int iterations;
     private SplittableRandom random;
+    SplittableRandom rng = new SplittableRandom(0);
+    
     
     /**
      * Construit un joueur simulé
@@ -26,13 +28,13 @@ public final class MctsPlayer implements Player{
      *          lorsque le nombre d'itérations est inférieur à 9
      */
     public MctsPlayer(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
-        if(iterations < 9) {
+        
+    	if(iterations < 9) {
             throw new IllegalArgumentException();
         }
         this.ownId = ownId;
         this.rngSeed = rngSeed;
         this.iterations = iterations;
-        SplittableRandom rng = new SplittableRandom(rngSeed);
         this.random = new SplittableRandom(rng.nextLong());
         
     }
@@ -56,26 +58,42 @@ public final class MctsPlayer implements Player{
         }
         
         
-        private int bestSon() {
-        	int max = 0;
-     	   for(int i = 0; i < nodes.length; i++) {
-     		   if(nodes[i].calculV(nodes[i].s_n, nodes[i].n_n, p.calculV(, i, n_p, c), 40) > nodes[max].calculV()) {
-     			   max = i;
-     		   }
-     	   } 
-     	   return max;
-        }
+        //TODO: Write this method
+        private int bestSon() {return 0;}
         
+        //TODO: Write this method
+        private double computeV() {return 0;} 
         
-        private double calculV() {
-            if(n_n > 0) {
-                return (s_n/n_n) + 40 * Math.sqrt((2*Math.log(n_p))/n_n);
-            }
-            else {
-                return Double.POSITIVE_INFINITY;
-            }
-        }
-        
+    }
+    
+    
+    /**
+     * Simule une partie entière à partir d'unr turnState
+     * @param turnState l'état du tout encours
+     * @return (Score) le score final obtenu de turnState
+     */
+    public Score randomSimulate(TurnState turnState, CardSet myHand) {
+    	
+    	while(!turnState.unplayedCards().isEmpty()) {
+    		System.out.println(turnState);
+    		System.out.println("My hand: " + myHand);
+    		if(!turnState.nextPlayer().equals(this.ownId)) {
+    			CardSet playable = turnState.unplayedCards().difference(myHand);
+    			Card card = playable.get(rng.nextInt(playable.size()));
+    			
+    			System.out.println("They are playing " + card);
+    			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+    		}
+			else {
+				CardSet playable = turnState.trick().playableCards(myHand);
+				int randomCardIndex = rng.nextInt(playable.size());
+				Card randomCardFromHand = myHand.get(randomCardIndex);
+				System.out.println("I am playing: " + randomCardFromHand);
+				turnState = turnState.withNewCardPlayedAndTrickCollected(randomCardFromHand);
+				myHand = myHand.remove(randomCardFromHand);
+			}
+    	}
+    	return turnState.score();
     }
 
     @Override

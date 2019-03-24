@@ -180,4 +180,10 @@ public final class TurnState {
         return updateState;
     }
     
+    @Override
+    public String toString() {
+    	return String.format("==== Turnstate: \nscore:, %s\ntrick: %s\nunplayed:%s", 
+    			score(), trick(), unplayedCards());
+    }
+    
 }
