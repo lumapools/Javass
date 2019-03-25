@@ -1,6 +1,7 @@
 package ch.epfl.javass.jass;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SplittableRandom;
 
@@ -17,7 +18,7 @@ import ch.epfl.javass.jass.MctsPlayer.Node;
 public final class MctsPlayer implements Player{
     private PlayerId ownId;
     private long rngSeed;
-    private int iterations;
+    public int iterations;
     SplittableRandom rng;
     
     
@@ -61,9 +62,6 @@ public final class MctsPlayer implements Player{
         	children = new Node[embryos.size()];
         	this.lastPlayedCard = lastPlayedCard;
         	
-        	
-        	
-        	
         }
         
         public CardSet embryos() {
@@ -84,8 +82,6 @@ public final class MctsPlayer implements Player{
         private int bestBranchFollowChild(int c) {
         	int max = 0;
         	for(int i = 0; i < children.length; i++) {
-//        		System.out.println(children[i]);
-//        		System.out.println(children[max]);
         		if(children[i].computeV(c, this) > children[max].computeV(c, this)) {
         			max = i;
         		}
@@ -203,7 +199,7 @@ public final class MctsPlayer implements Player{
         		return path;
         	}
         	if(root.children.length == 0) {
-        		return null;
+        		return Collections.EMPTY_LIST;
         		
     		}
         	else {
@@ -216,12 +212,19 @@ public final class MctsPlayer implements Player{
     
     
     public void computeAndUpdateScores(List<Node> path) {
-    	Score lastScore = this.randomSimulatePrimitive(path.get(path.size()-1).turnState);
-    	for(Node n: path) {
-    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+    	try {
+    		if(!path.isEmpty()) {
+	    		Node lastNode = path.get(path.size()-1);
+		    	Score lastScore = this.randomSimulatePrimitive(lastNode.turnState);
+		    	for(Node n: path) {
+		    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+		    	}
+    		}
     	}
+    	catch (IllegalArgumentException e) {}
+	}
     	
-    }
+    
     
 
     @Override
@@ -230,9 +233,11 @@ public final class MctsPlayer implements Player{
 		List<Node> path;
 		for(int i = 0; i < iterations; i++) {
 			path = growTreeByOneNode(root);
+			root.print("");
 			computeAndUpdateScores(path);
 		}
-		//TODO not return null;
+		
+		
 		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
     }
     

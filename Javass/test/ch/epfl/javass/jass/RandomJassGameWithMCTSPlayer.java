@@ -16,7 +16,6 @@ public class RandomJassGameWithMCTSPlayer {
                 player = new PrintingPlayer(new MctsPlayer(PlayerId.PLAYER_1, 2019, 1000));
                 playerNames.put(pId, pId.name() + " (me)");
             } 
-            //player = new PacedPlayer(player, 1000);
             
             players.put(pId, player);
         }

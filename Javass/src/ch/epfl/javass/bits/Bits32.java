@@ -127,14 +127,8 @@ final public class Bits32 {
      *          3) Si l'int donné en paramètre occupe plus de place (bits) que voulu en argument
      */
     public static int pack(int v1, int s1, int v2, int s2, int v3, int s3) throws IllegalArgumentException {
-        if(s1 < 0 || s2 < 0 || s3 < 0 || s1+s2+s3 > 32 || 
-                !packVerify(v1,s1) || !packVerify(v2,s2) || !packVerify(v3,s3)) {
-                    Preconditions.checkArgument(false);
-                }
-        else {
-            return (v1 | (v2 << s1) | (v3<<s2+s1));
-        }
-        return 0;
+    	Preconditions.checkArgument(s1+s2+s3 < 33 && packVerify(v1,s1) && packVerify(v2,s2) && packVerify(v3,s3));
+    	return (v1 | (v2 << s1) | (v3<<s2+s1));
     }
     
     /**

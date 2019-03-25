@@ -4,6 +4,7 @@ import java.util.Map;
 
 import ch.epfl.javass.jass.Card;
 import ch.epfl.javass.jass.Card.Color;
+import ch.epfl.javass.jass.Card.Rank;
 import ch.epfl.javass.jass.CardSet;
 import ch.epfl.javass.jass.Player;
 import ch.epfl.javass.jass.PlayerId;
@@ -21,6 +22,7 @@ public final class PrintingPlayer implements Player{
     @Override
     public Card cardToPlay(TurnState state, CardSet hand) {
         System.out.print("It's my turn to play, I play : ");
+        System.out.println("Hand: " + hand);
         Card c = player.cardToPlay(state, hand);
         System.out.println(c);
         return c;

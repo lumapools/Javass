@@ -18,7 +18,6 @@ import ch.epfl.javass.jass.MctsPlayer.Node;
 class MctsPlayerTest {
 	
 	@Test
-	@Disabled
 	void randomSimulateWorks(){
 		
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
@@ -55,9 +54,9 @@ class MctsPlayerTest {
 	
 	@Test
 	void addBestChildDemoWorks() {
-		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 10);
+		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1000);
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
-		for(int i = 1; i < 32; i++) {
+		for(int i = 1; i < 35; i++) {
 			turnState = turnState.withNewCardPlayedAndTrickCollected(turnState.unplayedCards().get(0));
 		}
 		Node root = new Node(turnState, null);
