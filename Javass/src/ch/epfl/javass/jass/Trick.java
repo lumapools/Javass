@@ -59,7 +59,6 @@ public final class Trick {
      * @return (Trick) un pli dont la forme empaquetée est packed
      */
     public static Trick ofPacked(int packed) {
-    	System.out.println(PackedTrick.toBinaryString(packed));
         Preconditions.checkArgument(PackedTrick.isValid(packed));
         return new Trick(packed);
     }

@@ -1,6 +1,12 @@
 package ch.epfl.javass.jass;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SplittableRandom;
+
+import ch.epfl.javass.jass.Card.Color;
+import ch.epfl.javass.jass.Card.Rank;
+import ch.epfl.javass.jass.MctsPlayer.Node;
 
 /**
  * Cette classe représente un joueur simulé au moyen de l'algorithme MCTS
@@ -12,8 +18,7 @@ public final class MctsPlayer implements Player{
     private PlayerId ownId;
     private long rngSeed;
     private int iterations;
-    private SplittableRandom random;
-    SplittableRandom rng = new SplittableRandom(0);
+    SplittableRandom rng;
     
     
     /**
@@ -32,37 +37,113 @@ public final class MctsPlayer implements Player{
     	if(iterations < 9) {
             throw new IllegalArgumentException();
         }
+    	this.rng = new SplittableRandom(rngSeed);
         this.ownId = ownId;
         this.rngSeed = rngSeed;
         this.iterations = iterations;
-        this.random = new SplittableRandom(rng.nextLong());
         
     }
     
-    private static class Node{
+    public static class Node{
     	
         private TurnState turnState;
-        private Node[] nodes;
-        private CardSet cardSet;
-        private int s_n;
-        private int n_n;
-        private Node p;
+        private Node[] children;
+        private CardSet embryos;
+        private int totalScorePerNode;
+        private int numSimulations;
+        private Card lastPlayedCard;
+
         
-        private Node(TurnState turnState, Node[] nodes, CardSet cardSet, int s_n, int n_n, Node p) {
+        public Node(TurnState turnState, Card lastPlayedCard) {
+        	MctsPlayer dummy = new MctsPlayer(PlayerId.PLAYER_1, 0, 10);
         	this.turnState = turnState;
-        	this.nodes = nodes;
-        	this.cardSet = cardSet;
-        	this.s_n = s_n;
-        	this.n_n = n_n;
-        	this.p = p;
+        	this.embryos = embryos();
+        	children = new Node[embryos.size()];
+        	this.lastPlayedCard = lastPlayedCard;
+        	
+        	
+        	
+        	
+        }
+        
+        public CardSet embryos() {
+        	return turnState.unplayedCards();
         }
         
         
-        //TODO: Write this method
-        private int bestSon() {return 0;}
+        public Card cardPlayed() {
+        	return turnState.trick().card(0);
+        }
+        
+        
+        /**
+         * Retourne le meilleur enfant, pour continuer à construire l'arbre
+         * @param c
+         * @return
+         */
+        private int bestBranchFollowChild(int c) {
+        	int max = 0;
+        	for(int i = 0; i < children.length; i++) {
+//        		System.out.println(children[i]);
+//        		System.out.println(children[max]);
+        		if(children[i].computeV(c, this) > children[max].computeV(c, this)) {
+        			max = i;
+        		}
+        	}
+        	return max;
+        }
         
         //TODO: Write this method
-        private double computeV() {return 0;} 
+        private double computeV(int c, Node parent) {
+        	if(numSimulations <= 0) {
+        		return Double.POSITIVE_INFINITY;
+        	}
+        	else {
+        		return totalScorePerNode/numSimulations + c * Math.sqrt(2*Math.log(parent.numSimulations)/(numSimulations));
+        	}
+        } 
+        
+        @Override
+        public String toString() {
+        	try {
+        		return "["+totalScorePerNode+"]  " + turnState.trick().toString() + " =========== " +embryos;
+        	}
+        	catch (IllegalArgumentException e) {}
+        	return "";
+        }
+        
+        public void print(String prefix) {
+        	System.out.print(prefix);
+        	System.out.println(toString());
+	        for(Node child: children) {
+	        	if(child != null) {
+	        		child.print("   " + prefix);
+	        	}
+	        	
+        	}
+
+        }
+        
+        public Node addChild(Card card) {
+        	for(int i = 0; i < children.length; i++) {
+        		if(children[i] == null) {
+        			children[i] = new Node(turnState.withNewCardPlayedAndTrickCollected(card), card);
+        			embryos = embryos.remove(card);
+        			return children[i];
+        		}
+        	}
+        	throw new IllegalStateException("Null children");
+        }
+        
+        public boolean hasEmbryos() {
+        	return !embryos.equals(CardSet.EMPTY);
+        }
+        
+        
+        public TurnState getTurnState() {
+        	return turnState;
+        }
+        
         
     }
     
@@ -95,11 +176,64 @@ public final class MctsPlayer implements Player{
     	}
     	return turnState.score();
     }
+    
+    public Score randomSimulatePrimitive(TurnState turnState) {
+    	while(!turnState.unplayedCards().isEmpty()) {
+			CardSet playable = turnState.unplayedCards();
+			Card card = playable.get(rng.nextInt(playable.size()));
+			
+			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+    		
+			
+    	}
+    	return turnState.score();
+    }
+    
+    /**
+     * 
+     * @param root
+     * @return
+     */
+    public List<Node> growTreeByOneNode(Node root) {
+    	List<Node> path = new ArrayList<Node>();
+    	while (true) {
+    		path.add(root);
+        	if(root.hasEmbryos()) {
+        		path.add(root.addChild(root.embryos.get(0)));
+        		return path;
+        	}
+        	if(root.children.length == 0) {
+        		return null;
+        		
+    		}
+        	else {
+        		root = root.children[root.bestBranchFollowChild(40)];
+        	}
+        		
+    	}    	
+    	
+    }
+    
+    
+    public void computeAndUpdateScores(List<Node> path) {
+    	Score lastScore = this.randomSimulatePrimitive(path.get(path.size()-1).turnState);
+    	for(Node n: path) {
+    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+    	}
+    	
+    }
+    
 
     @Override
     public Card cardToPlay(TurnState state, CardSet hand) {
-        // TODO Auto-generated method stub
-        return hand.get(0);
+    	Node root = new Node(state, null);
+		List<Node> path;
+		for(int i = 0; i < iterations; i++) {
+			path = growTreeByOneNode(root);
+			computeAndUpdateScores(path);
+		}
+		//TODO not return null;
+		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
     }
     
    

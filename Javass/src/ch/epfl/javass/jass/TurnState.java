@@ -109,6 +109,8 @@ public final class TurnState {
         return Trick.ofPacked(currentTrick);
     }
     
+    
+    
     /**
      * Retourne vrai ssi l'état est terminal, c-à-d si le dernier pli du tour a été joué
      * @return (boolean) vrai ssi terminal
@@ -185,5 +187,7 @@ public final class TurnState {
     	return String.format("==== Turnstate: \nscore:, %s\ntrick: %s\nunplayed:%s", 
     			score(), trick(), unplayedCards());
     }
+    
+    
     
 }
