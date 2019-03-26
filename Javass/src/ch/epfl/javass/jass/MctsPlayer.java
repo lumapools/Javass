@@ -101,10 +101,10 @@ public final class MctsPlayer implements Player{
         
         @Override
         public String toString() {
-        	try {
-        		return "["+totalScorePerNode+"]  " + turnState.trick().toString() + " =========== " +embryos;
-        	}
-        	catch (IllegalArgumentException e) {}
+        	if(!turnState.isTerminal())
+        		return String.format("[%.2f, %d] %s ========= %s", 
+        				(double)totalScorePerNode/(double)numSimulations, 
+        				numSimulations, turnState.trick().toString(), embryos);
         	return "";
         }
         
@@ -119,6 +119,29 @@ public final class MctsPlayer implements Player{
         	}
 
         }
+        
+        public void print(int maxDepth) {
+        	print(0, maxDepth);
+        }
+        
+        
+        public void print(int depth, int maxDepth) {
+        	if(depth > maxDepth) {
+        		return;
+        	}
+        	for(int i = 0; i < depth; i++) {
+        		System.out.print("   ");
+        	}
+        	System.out.println(toString());
+	        for(Node child: children) {
+	        	if(child != null) {
+	        		child.print(depth + 1, maxDepth);
+	        	}
+	        	
+        	}
+
+        }
+        
         
         public Node addChild(Card card) {
         	for(int i = 0; i < children.length; i++) {
@@ -150,27 +173,31 @@ public final class MctsPlayer implements Player{
      * @return (Score) le score final obtenu de turnState
      */
     public Score randomSimulate(TurnState turnState, CardSet myHand) {
-    	
-    	while(!turnState.unplayedCards().isEmpty()) {
-    		System.out.println(turnState);
-    		System.out.println("My hand: " + myHand);
-    		if(!turnState.nextPlayer().equals(this.ownId)) {
-    			CardSet playable = turnState.unplayedCards().difference(myHand);
-    			Card card = playable.get(rng.nextInt(playable.size()));
-    			
-    			System.out.println("They are playing " + card);
-    			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
-    		}
-			else {
-				CardSet playable = turnState.trick().playableCards(myHand);
-				int randomCardIndex = rng.nextInt(playable.size());
-				Card randomCardFromHand = myHand.get(randomCardIndex);
-				System.out.println("I am playing: " + randomCardFromHand);
-				turnState = turnState.withNewCardPlayedAndTrickCollected(randomCardFromHand);
-				myHand = myHand.remove(randomCardFromHand);
-			}
+    	if(!turnState.isTerminal()) {
+	    	while(!turnState.unplayedCards().isEmpty()) {
+	    		System.out.println(turnState);
+	    		System.out.println("My hand: " + myHand);
+	    		if(!turnState.nextPlayer().equals(this.ownId)) {
+	    			CardSet playable = turnState.unplayedCards().difference(myHand);
+	    			Card card = playable.get(rng.nextInt(playable.size()));
+	    			
+	    			System.out.println("They are playing " + card);
+	    			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+	    		}
+				else {
+					
+					CardSet playable = turnState.trick().playableCards(myHand);
+					int randomCardIndex = rng.nextInt(playable.size());
+					Card randomCardFromHand = myHand.get(randomCardIndex);
+					System.out.println("I am playing: " + randomCardFromHand);
+					turnState = turnState.withNewCardPlayedAndTrickCollected(randomCardFromHand);
+					myHand = myHand.remove(randomCardFromHand);
+				}
+	    	}
+	    	return turnState.score();
     	}
-    	return turnState.score();
+    	return null;
+    	
     }
     
     public Score randomSimulatePrimitive(TurnState turnState) {
@@ -178,8 +205,9 @@ public final class MctsPlayer implements Player{
 			CardSet playable = turnState.unplayedCards();
 			Card card = playable.get(rng.nextInt(playable.size()));
 			
-			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
-    		
+			if(!turnState.isTerminal()) {
+				turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+			}
 			
     	}
     	return turnState.score();
@@ -212,16 +240,16 @@ public final class MctsPlayer implements Player{
     
     
     public void computeAndUpdateScores(List<Node> path) {
-    	try {
-    		if(!path.isEmpty()) {
-	    		Node lastNode = path.get(path.size()-1);
-		    	Score lastScore = this.randomSimulatePrimitive(lastNode.turnState);
-		    	for(Node n: path) {
-		    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
-		    	}
-    		}
-    	}
-    	catch (IllegalArgumentException e) {}
+    
+		if(!path.isEmpty()) {
+			Node lastNode = path.get(path.size()-1);
+	    	Score lastScore = this.randomSimulatePrimitive(lastNode.turnState);
+	    	for(Node n: path) {
+	    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+	    		n.numSimulations += 1;
+	    	}
+		}
+    	
 	}
     	
     
@@ -232,12 +260,14 @@ public final class MctsPlayer implements Player{
     	Node root = new Node(state, null);
 		List<Node> path;
 		for(int i = 0; i < iterations; i++) {
-			path = growTreeByOneNode(root);
-			root.print("");
-			computeAndUpdateScores(path);
+			System.out.println(i);
+			if(!root.turnState.isTerminal()) {
+				path = growTreeByOneNode(root);
+				computeAndUpdateScores(path);
+			}
 		}
-		
-		
+		//root.print(1);
+		System.out.println("CHOSEN CARD: " +root.children[root.bestBranchFollowChild(0)].lastPlayedCard);
 		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
     }
     

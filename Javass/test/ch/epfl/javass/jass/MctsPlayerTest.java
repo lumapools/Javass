@@ -56,12 +56,12 @@ class MctsPlayerTest {
 	void addBestChildDemoWorks() {
 		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1000);
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
-		for(int i = 1; i < 35; i++) {
+		for(int i = 1; i < 34; i++) {
 			turnState = turnState.withNewCardPlayedAndTrickCollected(turnState.unplayedCards().get(0));
 		}
 		Node root = new Node(turnState, null);
 		List<Node> path;
-		for(int i = 0; i < 15; i++) {
+		for(int i = 0; i < 30; i++) {
 			path = mctsPlayer.growTreeByOneNode(root);
 			if(path != null) {
 				mctsPlayer.computeAndUpdateScores(path);

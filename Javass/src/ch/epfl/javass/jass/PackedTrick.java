@@ -124,7 +124,7 @@ public final class PackedTrick {
      */
     public static int nextEmpty(int pkTrick) {
         assert(isValid(pkTrick));
-        System.out.println(index(pkTrick));
+        //System.out.println(index(pkTrick));
         int nextIndex = index(pkTrick) + 1;
         int currentTrump = trump(pkTrick).ordinal();
         int nextPlayer = winningPlayer(pkTrick).ordinal();
@@ -132,7 +132,7 @@ public final class PackedTrick {
             return PackedTrick.INVALID;
         }
         else {
-        	System.out.println(nextIndex);
+        	//System.out.println(nextIndex);
             return Bits32.pack(PackedCard.INVALID, NB_BITS_FOR_CARD, 
             		PackedCard.INVALID, NB_BITS_FOR_CARD, 
             		PackedCard.INVALID, NB_BITS_FOR_CARD, 

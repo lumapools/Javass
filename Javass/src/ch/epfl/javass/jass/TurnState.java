@@ -116,7 +116,7 @@ public final class TurnState {
      * @return (boolean) vrai ssi terminal
      */
     public boolean isTerminal() {
-        return currentTrick == PackedTrick.INVALID;
+        return (trick().index() == Jass.TRICKS_PER_TURN-1 && trick().isFull());
     }
     
     /**
