@@ -167,7 +167,6 @@ public final class MctsPlayer implements Player{
         	return turnState;
         }
         
-        
     }
     
     
@@ -177,15 +176,13 @@ public final class MctsPlayer implements Player{
      * @return (Score) le score final obtenu de turnState
      */
     public Score randomSimulate(TurnState turnState, CardSet myHand) {
-    	if(!turnState.isTerminal()) {
-	    	while(!turnState.unplayedCards().isEmpty()) {
-	    		System.out.println(turnState);
-	    		System.out.println("My hand: " + myHand);
+	    	while(!turnState.isTerminal()) {
+	    		//System.out.println(turnState);
+	    		//System.out.println("My hand: " + myHand);
 	    		if(!turnState.nextPlayer().equals(this.ownId)) {
 	    			CardSet playable = turnState.unplayedCards().difference(myHand);
 	    			Card card = playable.get(rng.nextInt(playable.size()));
 	    			
-	    			System.out.println("They are playing " + card);
 	    			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
 	    		}
 				else {
@@ -193,26 +190,21 @@ public final class MctsPlayer implements Player{
 					CardSet playable = turnState.trick().playableCards(myHand);
 					int randomCardIndex = rng.nextInt(playable.size());
 					Card randomCardFromHand = myHand.get(randomCardIndex);
-					System.out.println("I am playing: " + randomCardFromHand);
 					turnState = turnState.withNewCardPlayedAndTrickCollected(randomCardFromHand);
 					myHand = myHand.remove(randomCardFromHand);
 				}
 	    	}
 	    	return turnState.score();
-    	}
-    	return null;
     	
     }
     
-    public Score randomSimulatePrimitive(TurnState turnState) {
+    public Score randomSimulatePrimitiveMcts(TurnState turnState) {
     	//while(!turnState.unplayedCards().isEmpty()) {
     	while(!turnState.isTerminal()) {
 			CardSet playable = turnState.unplayedCards();
 			Card card = playable.get(rng.nextInt(playable.size()));
 			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
 		}
-			
-    	
     	return turnState.score();
     }
     
@@ -235,10 +227,8 @@ public final class MctsPlayer implements Player{
     		}
         	else {
         		root = root.children[root.bestBranchFollowChild(40)];
-        	}
-        		
+        	}		
     	}    	
-    	
     }
     
     
@@ -246,7 +236,7 @@ public final class MctsPlayer implements Player{
     
 		if(!path.isEmpty()) {
 			Node lastNode = path.get(path.size()-1);
-	    	Score lastScore = this.randomSimulatePrimitive(lastNode.turnState);
+	    	Score lastScore = this.randomSimulatePrimitiveMcts(lastNode.turnState);
 	    	for(Node n: path) { 
 	    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
 	    		n.numSimulations += 1;

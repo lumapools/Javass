@@ -13,7 +13,7 @@ public class RandomJassGameWithMCTSPlayer {
             Player player = new RandomPlayer(2019);
             playerNames.put(pId, pId.name());
             if(pId == PlayerId.PLAYER_1) {
-                player = new PrintingPlayer(new MctsPlayer(PlayerId.PLAYER_1, 2019, 1000));
+                player = new PrintingPlayer(new MctsPlayer(PlayerId.PLAYER_1, 0, 1000));
                 playerNames.put(pId, pId.name() + " (me)");
             } 
             

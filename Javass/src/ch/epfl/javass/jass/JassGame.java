@@ -98,6 +98,8 @@ public final class JassGame {
         Collections.shuffle(deck, shuffleRng);
         for(int i = 0; i < PlayerId.ALL.size(); i++) {
         	playerCardSet.put(PlayerId.ALL.get(i), CardSet.of(deck.subList(i*Jass.HAND_SIZE, Jass.HAND_SIZE*(i+1))));
+       
+        	
         }
     }
     

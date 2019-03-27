@@ -20,23 +20,29 @@ class MctsPlayerTest {
 	@Test
 	void randomSimulateWorks(){
 		
+//		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
+//		CardSet myHand = CardSet.ofPacked(0b111111_0000_0000_0001_1100L);
+//		turnState = turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK));
+//		
+//		
+//		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1);
+//		System.out.println(mctsPlayer.randomSimulate(turnState, myHand));
+		
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
 		CardSet myHand = CardSet.ofPacked(0b111111_0000_0000_0001_1100L);
 		turnState = turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK));
-		turnState = turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.EIGHT));
-		myHand = myHand.remove(Card.of(Color.SPADE, Rank.EIGHT));
 		
 		
-		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 10);
+		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1);
+		System.out.println(mctsPlayer.randomSimulate(turnState, myHand));
 	   
-	    assertEquals("(3,52,0,52)/(6,105,0,105)", mctsPlayer.randomSimulate(turnState, myHand).toString());
 	}
 	
 	@Test
 	@Disabled
 	void nodeSysoutWorks() {
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
-		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 10);
+		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1);
 
 //		Node nC001 = new Node(turnState, s_n, n_n); 
 //		Node nC00 = new Node(turnState, s_n, n_n);
@@ -44,7 +50,7 @@ class MctsPlayerTest {
 //		Node nC02 = new Node(turnState, s_n, n_n);
 		Node root = new Node(turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK)), null);
 		List<Node> path = mctsPlayer.growTreeByOneNode(root);
-		System.out.println("Root: " + mctsPlayer.randomSimulatePrimitive(root.getTurnState()));
+		System.out.println("Root: " + mctsPlayer.randomSimulatePrimitiveMcts(root.getTurnState()));
 		Node node2 = root.addChild(Card.of(Color.SPADE, Rank.NINE));
 		Node node3 = root.addChild(Card.of(Color.SPADE, Rank.TEN));
 		//Node node11 = node1.addChild(Card.of(Color.SPADE, Rank.SIX));
@@ -53,6 +59,7 @@ class MctsPlayerTest {
 	}
 	
 	@Test
+	@Disabled
 	void addBestChildDemoWorks() {
 		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1000);
 		TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);

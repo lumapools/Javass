@@ -172,7 +172,7 @@ public final class PackedTrick {
      * @return (boolean) vrai si c'est plein, sinon faux
      */
     public static boolean isFull(int pkTrick) {
-        assert(isValid(pkTrick));
+        //assert(isValid(pkTrick));
         for(int i = 0; i<CARDS_PER_TRICK; i++) {
             if(Bits32.extract(pkTrick, NB_BITS_FOR_CARD*i, NB_BITS_FOR_CARD) == PackedCard.INVALID) {
                 return false;
