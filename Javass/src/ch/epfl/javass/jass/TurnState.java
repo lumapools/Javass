@@ -14,7 +14,8 @@ import ch.epfl.javass.jass.Card.Color;
 public final class TurnState {
     private final long currentScore; //score actuel
     private final long unplayedCards; //l'ensemble des cartes qui n'ont pas encore été jouées durant le tour
-    private final int currentTrick; //pli actuel
+    //TODO CHANGER EN PRIVATE
+    public final int currentTrick; //pli actuel
     
     /**
      * Constructeur privé
@@ -116,7 +117,7 @@ public final class TurnState {
      * @return (boolean) vrai ssi terminal
      */
     public boolean isTerminal() {
-        return (trick().index() == Jass.TRICKS_PER_TURN-1 && trick().isFull());
+        return (currentTrick == PackedTrick.INVALID);
     }
     
     /**

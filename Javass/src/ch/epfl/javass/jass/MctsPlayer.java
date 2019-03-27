@@ -149,10 +149,14 @@ public final class MctsPlayer implements Player{
         			children[i] = new Node(turnState.withNewCardPlayedAndTrickCollected(card), card);
         			embryos = embryos.remove(card);
         			return children[i];
+        			
         		}
         	}
-        	throw new IllegalStateException("Null children");
+        	throw new IllegalStateException("Children Full");
         }
+        
+        
+        
         
         public boolean hasEmbryos() {
         	return !embryos.equals(CardSet.EMPTY);
@@ -201,15 +205,14 @@ public final class MctsPlayer implements Player{
     }
     
     public Score randomSimulatePrimitive(TurnState turnState) {
-    	while(!turnState.unplayedCards().isEmpty()) {
+    	//while(!turnState.unplayedCards().isEmpty()) {
+    	while(!turnState.isTerminal()) {
 			CardSet playable = turnState.unplayedCards();
 			Card card = playable.get(rng.nextInt(playable.size()));
+			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+		}
 			
-			if(!turnState.isTerminal()) {
-				turnState = turnState.withNewCardPlayedAndTrickCollected(card);
-			}
-			
-    	}
+    	
     	return turnState.score();
     }
     
@@ -244,7 +247,7 @@ public final class MctsPlayer implements Player{
 		if(!path.isEmpty()) {
 			Node lastNode = path.get(path.size()-1);
 	    	Score lastScore = this.randomSimulatePrimitive(lastNode.turnState);
-	    	for(Node n: path) {
+	    	for(Node n: path) { 
 	    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
 	    		n.numSimulations += 1;
 	    	}
@@ -257,17 +260,15 @@ public final class MctsPlayer implements Player{
 
     @Override
     public Card cardToPlay(TurnState state, CardSet hand) {
+    	System.out.println(state);
     	Node root = new Node(state, null);
 		List<Node> path;
 		for(int i = 0; i < iterations; i++) {
-			System.out.println(i);
 			if(!root.turnState.isTerminal()) {
 				path = growTreeByOneNode(root);
 				computeAndUpdateScores(path);
 			}
 		}
-		//root.print(1);
-		System.out.println("CHOSEN CARD: " +root.children[root.bestBranchFollowChild(0)].lastPlayedCard);
 		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
     }
     

@@ -91,16 +91,14 @@ public final class JassGame {
     
     private void shuffleDeckAndDistribute(){
         List<Card> deck = new ArrayList<>();
-        for(Color c : Color.ALL) {
-            for(Rank r: Rank.ALL) {
-                deck.add(Card.of(c, r));
-            }
+        for(int i = 0; i < CardSet.ALL_CARDS.size(); i++) {
+        	deck.add(CardSet.ALL_CARDS.get(i));
         }
+        
         Collections.shuffle(deck, shuffleRng);
-        playerCardSet.put(PlayerId.PLAYER_1, CardSet.of(deck.subList(0, 9)));
-        playerCardSet.put(PlayerId.PLAYER_2, CardSet.of(deck.subList(9, 18)));
-        playerCardSet.put(PlayerId.PLAYER_3, CardSet.of(deck.subList(18, 27)));
-        playerCardSet.put(PlayerId.PLAYER_4, CardSet.of(deck.subList(27, 36)));
+        for(int i = 0; i < PlayerId.ALL.size(); i++) {
+        	playerCardSet.put(PlayerId.ALL.get(i), CardSet.of(deck.subList(i*Jass.HAND_SIZE, Jass.HAND_SIZE*(i+1))));
+        }
     }
     
     private void startNewTurn() {
@@ -119,7 +117,7 @@ public final class JassGame {
         chooseAndSetTrump();
         for (Map.Entry<PlayerId, CardSet> e: playerCardSet.entrySet()) {
             players.get(e.getKey()).setPlayers(e.getKey(), playerNames);
-            if(e.getValue().contains(Card.of(Color.DIAMOND, Rank.SEVEN)))
+            if(e.getValue().contains(Jass.STARTING_CARD))
                  firstPlayer = e.getKey();
         }
         for(PlayerId pId: PlayerId.ALL) {

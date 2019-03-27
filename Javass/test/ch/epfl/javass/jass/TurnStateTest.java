@@ -11,9 +11,16 @@ import org.junit.jupiter.api.Test;
 
 import ch.epfl.javass.bits.Bits32;
 import ch.epfl.javass.jass.Card.Color;
+import ch.epfl.javass.jass.Card.Rank;
 
 class TurnStateTest {
 
+	@Test
+	void turnStateIsTerminal() {
+		TurnState ts = TurnState.ofPackedComponents(Score.INITIAL.packed(), CardSet.EMPTY.packed(), 0b00_01_1000_001000_000000_100000_110000).withTrickCollected();
+		System.out.println(ts.isTerminal());
+	}
+	
     @Test
     void initialWorks() {
         for (Color trump : Color.ALL) {

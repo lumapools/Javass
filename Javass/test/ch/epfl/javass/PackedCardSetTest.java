@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SplittableRandom;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import ch.epfl.javass.jass.Card;
@@ -574,6 +575,7 @@ class PackedCardSetTest1 {
     };
 
     @Test
+    @Disabled
     void toStringWorksSomeValidCardSet() {
         for(long pkCardSet : toStringList.keySet())
             assertEquals(toStringList.get(pkCardSet),  CardSet.ofPacked(pkCardSet).toString());

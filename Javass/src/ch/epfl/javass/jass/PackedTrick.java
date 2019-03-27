@@ -113,7 +113,8 @@ public final class PackedTrick {
      * @return (int) le premier pli du jeu qui ne contient aucune carte, juste le joueur qui commence le pli et l'atout
      */
     public static int firstEmpty(Color trump, PlayerId firstPlayer) {
-        return (Bits32.pack(firstPlayer.ordinal(), NB_BITS_FOR_PLAYER, trump.ordinal(), NB_BITS_FOR_TRUMP) << BIT_START_PLAYER) | Bits32.mask(0,NB_BITS_FOR_CARDS);
+        return (Bits32.pack(firstPlayer.ordinal(), NB_BITS_FOR_PLAYER, trump.ordinal(), 
+        		NB_BITS_FOR_TRUMP) << BIT_START_PLAYER) | Bits32.mask(0,NB_BITS_FOR_CARDS);
     }
     
     /**
