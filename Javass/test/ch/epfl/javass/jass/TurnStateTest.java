@@ -3,270 +3,226 @@ package ch.epfl.javass.jass;
 import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
 import static ch.epfl.test.TestRandomizer.newRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.SplittableRandom;
 
 import org.junit.jupiter.api.Test;
 
-import ch.epfl.javass.bits.Bits32;
 import ch.epfl.javass.jass.Card.Color;
 import ch.epfl.javass.jass.Card.Rank;
 
-class TurnStateTest {
+public class TurnStateTest {
+    private static Score nextScore(SplittableRandom rng) {
+        Score s = Score.INITIAL;
+        for (int i = 0; i < rng.nextInt(5); ++i) {
+            TeamId t = nextTeamId(rng);
+            s = s.withAdditionalTrick(t, rng.nextInt(20));
+        }
+        return s;
+    }
 
-	@Test
-	void turnStateIsTerminal() {
-		TurnState ts = TurnState.ofPackedComponents(Score.INITIAL.packed(), CardSet.EMPTY.packed(), 0b00_01_1000_001000_000000_100000_110000).withTrickCollected();
-		System.out.println(ts.isTerminal());
-	}
-	
+    private static TeamId nextTeamId(SplittableRandom rng) {
+        return TeamId.ALL.get(rng.nextInt(TeamId.COUNT));
+    }
+
+    private static PlayerId nextPlayerId(SplittableRandom rng) {
+        return PlayerId.ALL.get(rng.nextInt(PlayerId.COUNT));
+    }
+
+    private static CardSet nextCardSet(SplittableRandom rng, int size) {
+        CardSet s = CardSet.ALL_CARDS;
+        while (s.size() > size) {
+            int toRemoveIndex = rng.nextInt(s.size());
+            s = s.remove(s.get(toRemoveIndex));
+        }
+        assert s.size() == size;
+        return s;
+    }
+
+    private static Color nextColor(SplittableRandom rng) {
+        return Color.ALL.get(rng.nextInt(Color.COUNT));
+    }
+
+    private static Card nextCard(SplittableRandom rng) {
+        return CardSet.ALL_CARDS.get(rng.nextInt(CardSet.ALL_CARDS.size()));
+    }
+
+    private static Trick nextTrick(SplittableRandom rng) {
+        Color trump = nextColor(rng);
+        PlayerId firstPlayer = nextPlayerId(rng);
+        Trick trick = Trick.firstEmpty(trump, firstPlayer);
+        for (int i = 0; i < rng.nextInt(4); ++i)
+            trick = trick.withAddedCard(nextCard(rng));
+        return trick;
+    }
+
     @Test
     void initialWorks() {
-        for (Color trump : Color.ALL) {
-            SplittableRandom rng = newRandom();
-            for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-                long pkScore = randomValidPkScore(rng);
-                Score score = Score.ofPacked(pkScore);
-                for (PlayerId firstPlayer : PlayerId.ALL) {
-                    int pkTrick = PackedTrick.firstEmpty(trump, firstPlayer);
-                    TurnState turn = TurnState.initial(trump, score,
-                            firstPlayer);
-                    assertEquals(pkScore, turn.packedScore());
-                    assertEquals(PackedCardSet.ALL_CARDS,
-                            turn.packedUnplayedCards());
-                    assertEquals(pkTrick, turn.packedTrick());
-
-                }
-            }
-        }
-    }
-
-    /**
-     * Disons que ce test vérifie aussi les methodes : - packedScore() -
-     * packedUnplayedCards() - packedtrick()
-     * 
-     * Si quelqu'un a une idée pour les tester à part, je suis preneur !
-     */
-    @Test
-    void ofPackedComponentWorksWithValidComponent() {
         SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            assertEquals(pkScore, turn.packedScore());
-            assertEquals(pkUnplayedCards, turn.packedUnplayedCards());
-            assertEquals(pkTrick, turn.packedTrick());
-        }
-    }
-
-    @Test
-    void ofPackedComponentWorksWithInvalidComponent() {
-        SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = rng.nextLong();
-            long pkUnplayedCards = rng.nextLong();
-            int pkTrick = rng.nextInt();
-            if (!PackedScore.isValid(pkScore)
-                    || !PackedCardSet.isValid(pkUnplayedCards)
-                    || !PackedTrick.isValid(pkTrick)) {
-                assertThrows(IllegalArgumentException.class, () -> {
-                    TurnState.ofPackedComponents(pkScore, pkUnplayedCards,
-                            pkTrick);
-                });
+        for (Color trump: Color.ALL) {
+            for (PlayerId firstPlayer: PlayerId.ALL) {
+                Score score = nextScore(rng);
+                TurnState s = TurnState.initial(trump, score, firstPlayer);
+                assertEquals(trump, s.trick().trump());
+                assertEquals(score, s.score());
+                assertEquals(firstPlayer, s.trick().player(0));
             }
         }
     }
 
     @Test
-    void scoreAndUnplayedCardsAndTrickWork() {
+    void ofPackedComponentsAndAccessorsWork() {
         SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            assertEquals(Score.ofPacked(pkScore), turn.score());
-            assertEquals(CardSet.ofPacked(pkUnplayedCards),
-                    turn.unplayedCards());
-            assertEquals(Trick.ofPacked(pkTrick), turn.trick());
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            Score score = nextScore(rng);
+            CardSet unplayedCards = nextCardSet(rng, 32);
+            Trick trick = nextTrick(rng);
+            TurnState s = TurnState.ofPackedComponents(score.packed(), unplayedCards.packed(), trick.packed());
+            assertEquals(score.packed(), s.packedScore());
+            assertEquals(score, s.score());
+            assertEquals(unplayedCards.packed(), s.packedUnplayedCards());
+            assertEquals(unplayedCards, s.unplayedCards());
+            assertEquals(trick.packed(), s.packedTrick());
+            assertEquals(trick, s.trick());
         }
+    }
+
+    @Test
+    void ofPackedComponentsFailsWithInvalidComponents() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            TurnState.ofPackedComponents(~0, PackedCardSet.EMPTY, PackedTrick.firstEmpty(Color.CLUB, PlayerId.PLAYER_1));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            TurnState.ofPackedComponents(PackedScore.INITIAL, ~0, PackedTrick.firstEmpty(Color.CLUB, PlayerId.PLAYER_1));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            TurnState.ofPackedComponents(PackedScore.INITIAL, PackedCardSet.EMPTY, PackedTrick.INVALID);
+        });
     }
 
     @Test
     void isTerminalWorks() {
         SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            if (turn.trick().isFull()) {
-                turn = turn.withTrickCollected();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            CardSet remainingCards = CardSet.ALL_CARDS;
+            TurnState s = TurnState.initial(nextColor(rng), Score.INITIAL, nextPlayerId(rng));
+            for (int t = 0; t < 9; ++t) {
+                for (int p = 0; p < 4; ++p) {
+                    assertFalse(s.isTerminal());
+                    Card cardToPlay = remainingCards.get(rng.nextInt(remainingCards.size()));
+                    remainingCards = remainingCards.remove(cardToPlay);
+                    s = s.withNewCardPlayed(cardToPlay);
+                }
+                s = s.withTrickCollected();
             }
-            assertEquals(turn.packedTrick() == PackedTrick.INVALID,
-                    turn.isTerminal());
+            assertTrue(s.isTerminal());
         }
     }
 
     @Test
     void nextPlayerWorks() {
         SplittableRandom rng = newRandom();
-        int count = 0;
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            if (PackedTrick.isFull(pkTrick)) {
-                assertThrows(IllegalStateException.class, () -> {
-                    turn.nextPlayer();
-                });
-            } else {
-                assertEquals(
-                        turn.trick()
-                                .player(PackedTrick.size(turn.packedTrick())),
-                        turn.nextPlayer());
+        for (PlayerId firstPlayer: PlayerId.ALL) {
+            Color trump = nextColor(rng);
+            Score score = nextScore(rng);
+            CardSet cardsToPlay = nextCardSet(rng, 4);
+            TurnState s = TurnState.initial(trump, score, firstPlayer);
+            for (int i = 0; i < 4; ++i) {
+                PlayerId expNextPlayer = PlayerId.ALL.get((firstPlayer.ordinal() + i) % PlayerId.COUNT);
+                assertEquals(expNextPlayer, s.nextPlayer());
+                s = s.withNewCardPlayed(cardsToPlay.get(i));
             }
         }
     }
 
     @Test
-    void withNewCardPlayedWorks() {
-        SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            int pkCard = randomValidPkCard(rng);
-            if (PackedTrick.isFull(turn.packedTrick())) {
-                assertThrows(IllegalStateException.class, () -> {
-                    turn.withNewCardPlayed(Card.ofPacked(pkCard));
-                });
-            } else {
-                TurnState turn2 = TurnState.ofPackedComponents(
-                        turn.packedScore(),
-                        PackedCardSet.remove(turn.packedUnplayedCards(),
-                                pkCard),
-                        PackedTrick.withAddedCard(turn.packedTrick(), pkCard));
-                TurnState turn3 = turn.withNewCardPlayed(Card.ofPacked(pkCard));
-                assertEquals(turn2.trick(), turn3.trick());
-                assertEquals(turn2.score(), turn3.score());
-                assertEquals(turn2.unplayedCards(), turn3.unplayedCards());
-            }
-        }
+    void nextPlayerFailsWhenTrickIsFull() {
+        TurnState s = TurnState.initial(Color.DIAMOND, Score.INITIAL, PlayerId.PLAYER_4)
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.NINE))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.TEN))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.ACE));
+        assertThrows(IllegalStateException.class, () -> {
+            s.nextPlayer();
+        });
     }
 
     @Test
-    void withTrickCollectedWorks() {
+    void withNewCardPlayedUpdatesUnplayedCards() {
         SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            if (!PackedTrick.isFull(turn.packedTrick())) {
-                assertThrows(IllegalStateException.class, () -> {
-                    turn.withTrickCollected();
-                });
-            } else {
-                TurnState turn2 = TurnState
-                        .ofPackedComponents(
-                                PackedScore.withAdditionalTrick(
-                                        turn.packedScore(),
-                                        PackedTrick
-                                                .winningPlayer(
-                                                        turn.packedTrick())
-                                                .team(),
-                                        PackedTrick.points(turn.packedTrick())),
-                                turn.packedUnplayedCards(), turn.packedTrick());
-                TurnState turn3 = turn.withTrickCollected();
-                assertEquals(PackedTrick.nextEmpty(turn2.packedTrick()),
-                        turn3.packedTrick());
-                assertEquals(turn2.score(), turn3.score());
-                assertEquals(turn2.unplayedCards(), turn3.unplayedCards());
-            }
-        }
-    }
-
-    @Test
-    void withNewCardPlayedAndTrickCollectedWorks() {
-        SplittableRandom rng = newRandom();
-        for (int i = 0; i < RANDOM_ITERATIONS; i++) {
-            long pkScore = randomValidPkScore(rng);
-            long pkUnplayedCards = randomValidCardSet(rng);
-            int pkTrick = randomValidPkTrick(rng);
-            TurnState turn = TurnState.ofPackedComponents(pkScore,
-                    pkUnplayedCards, pkTrick);
-            int pkCard = randomValidPkCard(rng);
-            if (PackedTrick.isFull(turn.packedTrick())) {
-                assertThrows(IllegalStateException.class, () -> {
-                    turn.withNewCardPlayedAndTrickCollected(
-                            Card.ofPacked(pkCard));
-                });
-            } else {
-                TurnState turn2 = turn.withNewCardPlayed(Card.ofPacked(pkCard));
-                TurnState turn3 = turn.withNewCardPlayedAndTrickCollected(
-                        Card.ofPacked(pkCard));
-                if (PackedTrick.isFull(turn2.packedTrick())) {
-                    turn2 = turn2.withTrickCollected();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            CardSet remainingCards = CardSet.ALL_CARDS;
+            TurnState s = TurnState.initial(nextColor(rng), Score.INITIAL, nextPlayerId(rng));
+            for (int t = 0; t < 9; ++t) {
+                for (int p = 0; p < 4; ++p) {
+                    assertEquals(remainingCards, s.unplayedCards());
+                    Card cardToPlay = remainingCards.get(rng.nextInt(remainingCards.size()));
+                    remainingCards = remainingCards.remove(cardToPlay);
+                    s = s.withNewCardPlayed(cardToPlay);
                 }
-                assertEquals(Integer.toBinaryString(turn2.packedTrick()),
-                        Integer.toBinaryString(turn3.packedTrick()));
-                assertEquals(turn2.score(), turn3.score());
-                assertEquals(turn2.unplayedCards(), turn3.unplayedCards());
+                s = s.withTrickCollected();
             }
+            assertEquals(CardSet.EMPTY, s.unplayedCards());
         }
-
     }
 
-    private static long randomValidPkScore(SplittableRandom rng) {
-        int t1 = rng.nextInt(9);
-        int p1 = rng.nextInt(100);
-        int g1 = rng.nextInt(2000);
-        int t2 = rng.nextInt(9 - t1);
-        int p2 = rng.nextInt(100 - p1);
-        int g2 = rng.nextInt(2000 - g1);
-        return PackedScore.pack(t1, p1, g1, t2, p2, g2);
+    @Test
+    void withNewCardPlayedFailsWhenTrickIsFull() {
+        TurnState s = TurnState.initial(Color.HEART, Score.INITIAL, PlayerId.PLAYER_2)
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.NINE))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.TEN))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.ACE));
+        assertThrows(IllegalStateException.class, () -> {
+            s.withNewCardPlayed(Card.of(Color.HEART, Rank.ACE));
+        });
     }
 
-    private static int randomValidPkTrick(SplittableRandom rng) {
-        int card3 = (rng.nextInt() % 4 == 0) ? PackedCard.INVALID
-                : randomValidPkCard(rng);
-        int card2 = (card3 == PackedCard.INVALID && rng.nextInt() % 4 == 0)
-                ? PackedCard.INVALID
-                : randomValidPkCard(rng);
-        int card1 = (card2 == PackedCard.INVALID && rng.nextInt() % 4 == 0)
-                ? PackedCard.INVALID
-                : randomValidPkCard(rng);
-        int card0 = (card1 == PackedCard.INVALID && rng.nextInt() % 4 == 0)
-                ? PackedCard.INVALID
-                : randomValidPkCard(rng);
-        int index = rng.nextInt(9);
-        int player = rng.nextInt(4);
-        int trump = rng.nextInt(4);
-        return Bits32.pack(card0, 6, card1, 6, card2, 6, card3, 6, index, 4,
-                player, 2, trump, 2);
+    @Test
+    void withTrickCollectedFailsWhenTrickIsNotFull() {
+        SplittableRandom rng = newRandom();
+        CardSet deck = CardSet.ALL_CARDS;
+        for (int i = 0; i < 3; ++i) {
+            TurnState s = TurnState.initial(nextColor(rng), Score.INITIAL, nextPlayerId(rng));
+            for (int j = 0; j <= i; ++j)
+                s = s.withNewCardPlayed(deck.get(j));
+            TurnState s1 = s;
+            assertThrows(IllegalStateException.class, () -> {
+                s1.withTrickCollected();
+            });
+        }
     }
 
-    private static long randomValidCardSet(SplittableRandom rng) {
-        return ((rng.nextLong(0b1000000000) << 16
-                | rng.nextLong(0b1000000000)) << 16
-                | rng.nextLong(0b1000000000)) << 16
-                | rng.nextLong(0b1000000000);
+    @Test
+    void withNewCardPlayedAndTrickCollectedUpdatesUnplayedCards() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            CardSet remainingCards = CardSet.ALL_CARDS;
+            TurnState s = TurnState.initial(nextColor(rng), Score.INITIAL, nextPlayerId(rng));
+            for (int t = 0; t < 9; ++t) {
+                for (int p = 0; p < 4; ++p) {
+                    assertEquals(remainingCards, s.unplayedCards());
+                    Card cardToPlay = remainingCards.get(rng.nextInt(remainingCards.size()));
+                    remainingCards = remainingCards.remove(cardToPlay);
+                    s = s.withNewCardPlayedAndTrickCollected(cardToPlay);
+                }
+            }
+            assertEquals(CardSet.EMPTY, s.unplayedCards());
+        }
     }
 
-    private static int randomValidPkCard(SplittableRandom rng) {
-        return rng.nextInt(4) << 4 | rng.nextInt(9);
+    @Test
+    void withNewCardPlayedAndTrickCollectedFailsWhenTrickIsFull() {
+        TurnState s = TurnState.initial(Color.HEART, Score.INITIAL, PlayerId.PLAYER_2)
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.NINE))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.TEN))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK))
+                .withNewCardPlayed(Card.of(Color.SPADE, Rank.ACE));
+        assertThrows(IllegalStateException.class, () -> {
+            s.withNewCardPlayedAndTrickCollected(Card.of(Color.HEART, Rank.ACE));
+        });
     }
-
 }

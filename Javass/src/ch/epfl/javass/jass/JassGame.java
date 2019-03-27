@@ -44,6 +44,7 @@ public final class JassGame {
         Random rng = new Random(rngSeed);
         this.shuffleRng = new Random(rng.nextLong());
         this.trumpRng = new Random(rng.nextLong());
+        turnState = TurnState.ofPackedComponents(0L, 0L, 0);
     }
     
     /**
@@ -51,18 +52,14 @@ public final class JassGame {
      * @return (boolean)  vrai ssi la partie est terminée
      */
     public boolean isGameOver() {
-        if(turnState != null) {
-            for (TeamId t: TeamId.ALL) {
-                if(turnState.score().totalPoints(t) >= Jass.WINNING_POINTS) {
-                    if(!alreadySaid) {
-                        updateScore();
-                        setWinningTeam(t);
-                        alreadySaid = true;
-                    }
-                    return true;
+        for (TeamId t: TeamId.ALL) {
+            if(turnState.score().totalPoints(t) >= Jass.WINNING_POINTS) {
+                if(!alreadySaid) {
+                    setWinningTeam(t);
+                    alreadySaid = true;
                 }
+                return true;
             }
-            return false;
         }
         return false;
     }
@@ -71,18 +68,23 @@ public final class JassGame {
      * Cette méthode fait avancer l'état du jeu jusqu'à la fin du prochain pli, ou ne fait rien si la partie est terminée
      */
     public void advanceToEndOfNextTrick() {
-        if(turnState == null) {
+        if(isGameOver()) {
+            return;
+        }
+        if(turnState.packedScore() == 0L && turnState.packedUnplayedCards() == 0L && turnState.packedTrick() == 0) {
+            shuffleDeckAndDistribute();
             startNewGame();
         }else {
             turnState = turnState.withTrickCollected();
+            updateScore();
             
         }
         if(isGameOver()) {
         } else {
             if(turnState.isTerminal()) {
+                shuffleDeckAndDistribute();
                 startNewTurn();
             }
-            updateScore();
             updateTrick();
             playerPlays();
         }
@@ -90,32 +92,25 @@ public final class JassGame {
     
     
     private void shuffleDeckAndDistribute(){
+        int deckSize = CardSet.ALL_CARDS.size();
         List<Card> deck = new ArrayList<>();
-        for(int i = 0; i < CardSet.ALL_CARDS.size(); i++) {
-        	deck.add(CardSet.ALL_CARDS.get(i));
-        }
-        
+        for(int i=0; i< deckSize;i++)
+            deck.add(CardSet.ALL_CARDS.get(i));
         Collections.shuffle(deck, shuffleRng);
-        for(int i = 0; i < PlayerId.ALL.size(); i++) {
-        	playerCardSet.put(PlayerId.ALL.get(i), CardSet.of(deck.subList(i*Jass.HAND_SIZE, Jass.HAND_SIZE*(i+1))));
-       
-        	
-        }
+        for(int i=0; i<4; i++ )
+            playerCardSet.put(PlayerId.values()[i], CardSet.of(deck.subList(i*deckSize/4, (i+1)*deckSize/4)));
     }
     
     private void startNewTurn() {
-        shuffleDeckAndDistribute();
         chooseAndSetTrump();
         for(PlayerId pId: PlayerId.ALL) {
             updateHand(pId);
-            players.get(pId).setTrump(trump);
         }
         firstPlayer = PlayerId.ALL.get((firstPlayer.ordinal()+1)%4);
         turnState = TurnState.initial(trump, turnState.score().nextTurn(), firstPlayer);
     }
     
     private void startNewGame() {
-        shuffleDeckAndDistribute();
         chooseAndSetTrump();
         for (Map.Entry<PlayerId, CardSet> e: playerCardSet.entrySet()) {
             players.get(e.getKey()).setPlayers(e.getKey(), playerNames);
@@ -126,6 +121,7 @@ public final class JassGame {
             updateHand(pId);
             players.get(pId).setTrump(trump);
         }
+        updateScore();
         turnState = TurnState.initial(trump, Score.INITIAL, firstPlayer);
     }
     

@@ -231,6 +231,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void firstEmptyWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -292,6 +293,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void isLastWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -304,6 +306,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void isEmptyWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -319,6 +322,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void isFullWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -335,6 +339,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void sizeWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -348,6 +353,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void trumpWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -362,6 +368,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void playerWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -375,6 +382,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void indexWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -392,6 +400,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void cardWorksForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -488,6 +497,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void baseColorForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -507,6 +517,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void pointsForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();
@@ -521,6 +532,7 @@ public class PackedTrickTest {
     }
 
     @Test
+    @Disabled
     void winningPlayerForAllValidTrick() {
         if(!worksForAllValidTrick)
             worksForAllValidTrick();

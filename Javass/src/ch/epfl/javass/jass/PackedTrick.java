@@ -346,9 +346,11 @@ public final class PackedTrick {
         for(int i =0; i<size(pkTrick); ++i) {
             points += PackedCard.points(trump(pkTrick), card(pkTrick, i));
         }
+        
         if(isLast(pkTrick)) {
             points += Jass.LAST_TRICK_ADDITIONAL_POINTS;
         }
+        
         return points;
     }
     
@@ -388,8 +390,11 @@ public final class PackedTrick {
     public static String toString(int pkTrick) {
         assert(isValid(pkTrick));
         String representation =  "Started by: " + player(pkTrick, 0) + "(" +  "Tour : " + index(pkTrick) + ", ";
-        for(int i = 0; i<size(pkTrick); ++i) {
-            representation += PackedCard.toString(card(pkTrick, i)) + ", ";
+        for(int i = 0; i<4; ++i) {
+            if(card(pkTrick, i)==PackedCard.INVALID)
+                representation += "----, ";
+            else
+                representation += String.format("%4s, ", PackedCard.toString(card(pkTrick, i)));
         }
         representation += "nombre de points: " + points(pkTrick) + ")";
         return representation;

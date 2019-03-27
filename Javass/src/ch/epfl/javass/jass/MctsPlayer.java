@@ -205,7 +205,9 @@ public final class MctsPlayer implements Player{
 			Card card = playable.get(rng.nextInt(playable.size()));
 			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
 		}
-    	return turnState.score();
+    	long packedScore = turnState.packedScore();
+    	Score score = Score.ofPacked(packedScore);
+		return score;
     }
     
     /**
@@ -258,6 +260,7 @@ public final class MctsPlayer implements Player{
 				path = growTreeByOneNode(root);
 				computeAndUpdateScores(path);
 			}
+			
 		}
 		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
     }

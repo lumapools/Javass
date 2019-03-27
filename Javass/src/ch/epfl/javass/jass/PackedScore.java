@@ -19,8 +19,8 @@ public final class PackedScore {
      * constantes de score
      */
     private static final long MAX_TRICKS_PER_TURN = 9L;
-    private static final long MAX_TURN_POINTS = 257;
-    private static final long MAX_GAME_POINTS = 2000;
+    private static final long MAX_TURN_POINTS = 257L;
+    private static final long MAX_GAME_POINTS = 2000L;
     private static final int INITIAL_NB_TRICKS = 0;
     private static final int INITIAL_TURN_POINTS = 0;
 
@@ -61,6 +61,7 @@ public final class PackedScore {
      * @return (boolean) la valeur de la validité d'un score
      */
     public static boolean isValid(long pkScore) {
+    	
         if (Bits64.extract(pkScore, TRICK_BITS_START_T1, NB_TRICK_BITS) > MAX_TRICKS_PER_TURN ||
                 Bits64.extract(pkScore, TURN_POINTS_START_T1, NB_TURN_POINTS_BITS) > MAX_TURN_POINTS ||
                 Bits64.extract(pkScore, GAME_POINTS_START_T1, NB_GAME_POINTS_BITS) > MAX_GAME_POINTS ||
@@ -178,6 +179,43 @@ public final class PackedScore {
      * @return (long) le score actuel empaqueté sous forme de séquence de 64 bits (sans avoir mis à jour le score total des 2 équipes)
      */
     public static long withAdditionalTrick(long pkScore, TeamId winningTeam, int trickPoints) {
+
+
+        assert(isValid(pkScore));
+        int tricksUpdated = turnTricks(pkScore, winningTeam) + 1;
+        int scoreUpdated = turnPoints(pkScore, winningTeam) + trickPoints;
+
+        int turnTricks1;
+        int turnPoints1;
+        int gamePoints1;
+        int turnTricks2;
+        int turnPoints2;
+        int gamePoints2;
+
+        if(winningTeam.equals(TeamId.TEAM_1)){
+            turnTricks1 = tricksUpdated;
+            turnPoints1 = scoreUpdated;
+            gamePoints1 = gamePoints(pkScore, TeamId.TEAM_1);
+            turnTricks2 = turnTricks(pkScore, TeamId.TEAM_2);
+            turnPoints2 = turnPoints(pkScore, TeamId.TEAM_2);
+            gamePoints2 = gamePoints(pkScore, TeamId.TEAM_2);
+            if(tricksUpdated == Jass.TRICKS_PER_TURN)
+                gamePoints1 += Jass.MATCH_ADDITIONAL_POINTS;
+        } else {
+            turnTricks1 = turnTricks(pkScore, TeamId.TEAM_1);
+            turnPoints1 = turnPoints(pkScore, TeamId.TEAM_1);
+            gamePoints1 = gamePoints(pkScore, TeamId.TEAM_1);
+            turnTricks2 = tricksUpdated;
+            turnPoints2 = scoreUpdated;
+            gamePoints2 = gamePoints(pkScore, TeamId.TEAM_2);
+            if(tricksUpdated == Jass.TRICKS_PER_TURN)
+                gamePoints2 += Jass.MATCH_ADDITIONAL_POINTS;
+        }
+
+        return pack(turnTricks1, turnPoints1, gamePoints1, turnTricks2, turnPoints2, gamePoints2);
+    }
+    /*
+    public static long withAdditionalTrick(long pkScore, TeamId winningTeam, int trickPoints) {
         assert(isValid(pkScore));
         int tricksUpdated = turnTricks(pkScore, winningTeam) + 1;
         int scoreUpdated;
@@ -191,6 +229,8 @@ public final class PackedScore {
         }
         return pack(turnTricks(pkScore, TeamId.TEAM_1), turnPoints(pkScore, TeamId.TEAM_1), gamePoints(pkScore, TeamId.TEAM_1), tricksUpdated, scoreUpdated, gamePoints(pkScore, TeamId.TEAM_2));
     }
+    */
+    
     
     /**
      * Retourne les scores empaquetés donnés mis à jour pour le tour prochain
@@ -210,13 +250,13 @@ public final class PackedScore {
      * @return(String) (plis, points partie courante, gamePoints, totalPoints)
      */
     public static String toString(long pkScore) {
-        return "(" + turnTricks(pkScore, TeamId.TEAM_1) + "," + 
-                     turnPoints(pkScore, TeamId.TEAM_1) + "," + 
-        		     gamePoints(pkScore, TeamId.TEAM_1) + "," + 
-                     totalPoints(pkScore, TeamId.TEAM_1) + ")/(" + 
-        		     turnTricks(pkScore, TeamId.TEAM_2) + "," + 
-                     turnPoints(pkScore, TeamId.TEAM_2) + "," + 
-        		     gamePoints(pkScore, TeamId.TEAM_2) + "," + 
-                     totalPoints(pkScore, TeamId.TEAM_2) + ")";
+        return "(" + "TrickPT1: " + turnTricks(pkScore, TeamId.TEAM_1) + "," + 
+                     "TurnPT1: " + turnPoints(pkScore, TeamId.TEAM_1) + "," + 
+        		     "GamePT1: " + gamePoints(pkScore, TeamId.TEAM_1) + "," + 
+                     "TotPtT1: " + totalPoints(pkScore, TeamId.TEAM_1) + ")  /  (" + 
+        		     "TrickPT2: " + turnTricks(pkScore, TeamId.TEAM_2) + "," + 
+                     "TurnPT2: " + turnPoints(pkScore, TeamId.TEAM_2) + "," + 
+        		     "GamePT2: " + gamePoints(pkScore, TeamId.TEAM_2) + "," + 
+                     "TotPtT2: " + totalPoints(pkScore, TeamId.TEAM_2) + ")";
     }
 }

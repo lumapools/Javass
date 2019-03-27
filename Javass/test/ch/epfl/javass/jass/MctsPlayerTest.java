@@ -33,7 +33,7 @@ class MctsPlayerTest {
 		turnState = turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK));
 		
 		
-		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1);
+		MctsPlayer mctsPlayer = new MctsPlayer(PlayerId.PLAYER_2, 0, 1000);
 		System.out.println(mctsPlayer.randomSimulate(turnState, myHand));
 	   
 	}

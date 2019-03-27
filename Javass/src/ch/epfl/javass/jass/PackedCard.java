@@ -132,8 +132,8 @@ public final class PackedCard {
     public static int points(Card.Color trump, int pkCard) {
         assert isValid(pkCard);
         switch(rank(pkCard)) {
-            case SIX:
-            case SEVEN:
+            case SIX: return 0;
+            case SEVEN: return 0;
             case EIGHT: return 0;
             case TEN: return 10;
             case QUEEN: return 3;

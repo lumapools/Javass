@@ -37,7 +37,7 @@ public final class Score {
      * @return (Score) le score
      */
     public static Score ofPacked(long packed) {
-        Preconditions.checkArgument(PackedScore.isValid(packed));
+        //Preconditions.checkArgument(PackedScore.isValid(packed));
         return new Score(packed);
     }
     

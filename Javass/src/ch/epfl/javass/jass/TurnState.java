@@ -160,7 +160,15 @@ public final class TurnState {
         if(!PackedTrick.isFull(currentTrick)) {
             throw new IllegalStateException();
         }
-        return new TurnState(PackedScore.withAdditionalTrick(currentScore, PackedTrick.winningPlayer(currentTrick).team(), PackedTrick.points(currentTrick)), unplayedCards, PackedTrick.nextEmpty(currentTrick));
+        int nextEmpty = PackedTrick.nextEmpty(currentTrick);
+        long newScore = PackedScore.withAdditionalTrick(
+                currentScore,
+                PackedTrick.winningPlayer(currentTrick).team(),
+                PackedTrick.points(currentTrick)
+        );
+        String testScore = PackedScore.toString(newScore);
+        TurnState newState = new TurnState(newScore,  unplayedCards, nextEmpty    );
+        return newState;
     }
     
     /**
