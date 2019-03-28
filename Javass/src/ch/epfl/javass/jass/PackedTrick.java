@@ -387,6 +387,7 @@ public final class PackedTrick {
      *          pli empaqueté
      * @return (String) (Tour : x, les cartes jouées, nombre de points)
      */
+    /*
     public static String toString(int pkTrick) {
         assert(isValid(pkTrick));
         String representation =  "Started by: " + player(pkTrick, 0) + "(" +  "Tour : " + index(pkTrick) + ", ";
@@ -397,6 +398,19 @@ public final class PackedTrick {
                 representation += String.format("%4s, ", PackedCard.toString(card(pkTrick, i)));
         }
         representation += "nombre de points: " + points(pkTrick) + ")";
+        return representation;
+    }
+    */
+    public static String toString(int pkTrick) {
+        assert(isValid(pkTrick));
+        String representation =  " " + trump(pkTrick) + " " + player(pkTrick, 0) + " " +  index(pkTrick) + " { ";
+        for(int i = 0; i<4; ++i) {
+            if(card(pkTrick, i)==PackedCard.INVALID)
+                representation += "----, ";
+            else
+                representation += String.format("%4s, ", PackedCard.toString(card(pkTrick, i)));
+        }
+        representation += "{" + points(pkTrick) + "}";
         return representation;
     }
 }

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SplittableRandom;
 
 import org.junit.jupiter.api.Test;
@@ -224,5 +226,36 @@ public class TurnStateTest {
         assertThrows(IllegalStateException.class, () -> {
             s.withNewCardPlayedAndTrickCollected(Card.of(Color.HEART, Rank.ACE));
         });
+    }
+    
+    @Test
+    void testWithAllCardsDisplayed() {
+    	List<Card> cardList = new ArrayList<Card>();
+    	for(int i = 0; i < CardSet.ALL_CARDS.size(); i++) {
+    		cardList.add(CardSet.ALL_CARDS.get(i));
+    	}
+
+    	for(Card.Rank rank: Card.Rank.ALL) {
+    		for(Card.Color color: Card.Color.ALL) {
+    			cardList.add(Card.of(color, rank));
+    		}
+    	}
+    		
+    	TurnState s = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
+		System.out.println(s);
+    	for(Card c: cardList) {
+    		s = s.withNewCardPlayed(c);
+    		System.out.println(s);
+    		if(s.trick().isFull()) {
+    			System.out.println("FULL");
+    			s = s.withTrickCollected();
+    			System.out.println(s);
+    		}
+    		if(s.isTerminal()) {
+    			System.out.println("TERMINAL");
+    			s = TurnState.initial(Color.SPADE, s.score().nextTurn(), PlayerId.PLAYER_1);
+    			System.out.println(s);
+    		}
+    	}
     }
 }

@@ -71,7 +71,7 @@ class MctsPlayerTest {
 		for(int i = 0; i < 30; i++) {
 			path = mctsPlayer.growTreeByOneNode(root);
 			if(path != null) {
-				mctsPlayer.computeAndUpdateScores(path);
+				mctsPlayer.computeAndUpdateScores(path, null);
 			}
 		}
 		root.print("");

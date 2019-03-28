@@ -117,7 +117,7 @@ public final class TurnState {
      * @return (boolean) vrai ssi terminal
      */
     public boolean isTerminal() {
-        return (currentTrick == PackedTrick.INVALID);
+        return (score().turnTricks(TeamId.TEAM_1) + score().turnTricks(TeamId.TEAM_2) == Jass.TRICKS_PER_TURN);
     }
     
     /**
@@ -156,19 +156,18 @@ public final class TurnState {
      * @return (TurnState) l'état correspondant
      * @throws IllegalStateException si le pli n'est pas plein
      */
-    public TurnState withTrickCollected() throws IllegalStateException{
-        if(!PackedTrick.isFull(currentTrick)) {
+    
+    public TurnState withTrickCollected() {
+        if(!trick().isFull())
             throw new IllegalStateException();
-        }
-        int nextEmpty = PackedTrick.nextEmpty(currentTrick);
-        long newScore = PackedScore.withAdditionalTrick(
-                currentScore,
-                PackedTrick.winningPlayer(currentTrick).team(),
-                PackedTrick.points(currentTrick)
-        );
-        String testScore = PackedScore.toString(newScore);
-        TurnState newState = new TurnState(newScore,  unplayedCards, nextEmpty    );
-        return newState;
+        PlayerId winningPlayer = trick().winningPlayer();
+        Score newScore = score().withAdditionalTrick(winningPlayer.team(), trick().points());
+        Trick nextTrick;
+        if(trick().isLast())
+            nextTrick = Trick.firstEmpty(trick().trump(), trick().winningPlayer());
+        else
+            nextTrick = trick().nextEmpty();
+        return TurnState.ofPackedComponents(newScore.packed(), unplayedCards().packed(), nextTrick.packed());
     }
     
     /**
@@ -193,8 +192,7 @@ public final class TurnState {
     
     @Override
     public String toString() {
-    	return String.format("==== Turnstate: \nscore:, %s\ntrick: %s\nunplayed:%s", 
-    			score(), trick(), unplayedCards());
+    	return String.format("%s %s %s", score(), trick(), unplayedCards());
     }
     
     
