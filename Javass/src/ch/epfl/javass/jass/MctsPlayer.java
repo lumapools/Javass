@@ -182,7 +182,6 @@ public final class MctsPlayer implements Player{
 
         }
         
-        
         /**
          * Remplit le tableau des enfants d'un noeud
          * @param card (Card) 
@@ -193,7 +192,10 @@ public final class MctsPlayer implements Player{
         	for(int i = 0; i < children.length; i++) {
         		if(children[i] == null) {
         			TurnState childsState = turnState.withNewCardPlayedAndTrickCollected(card);
-        			CardSet childsHand = this.hand;
+        			CardSet childsHand = hand;
+        			if(turnState.nextPlayer().equals(playerId)) {
+        				childsHand = childsHand.remove(card);
+        			}
         			children[i] = new Node(childsState, childsHand, card, playerId);
         			embryos = embryos.remove(card);
         			return children[i];
