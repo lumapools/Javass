@@ -307,7 +307,7 @@ public final class MctsPlayer implements Player{
 		for(int i = 0; i < iterations; i++) {
 			if(!root.turnState.isTerminal()) {
 				path = growTreeByOneNode(root);
-				computeAndUpdateScores(path);
+				computeAndUpdateScores(path, hand);
 			}
 			
 		}
