@@ -48,13 +48,10 @@ class MctsPlayerTest {
 //		Node nC00 = new Node(turnState, s_n, n_n);
 //		Node nC01 = new Node(turnState, s_n, n_n);
 //		Node nC02 = new Node(turnState, s_n, n_n);
-		Node root = new Node(turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK)), null);
+		Node root = new Node(turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK)),null, null, PlayerId.PLAYER_1);
 		List<Node> path = mctsPlayer.growTreeByOneNode(root);
-		System.out.println("Root: " + mctsPlayer.randomSimulatePrimitiveMcts(root.getTurnState()));
-		Node node2 = root.addChild(Card.of(Color.SPADE, Rank.NINE));
-		Node node3 = root.addChild(Card.of(Color.SPADE, Rank.TEN));
+		System.out.println("Root: " + mctsPlayer.randomSimulatePrimitiveMcts(turnState));
 		//Node node11 = node1.addChild(Card.of(Color.SPADE, Rank.SIX));
-		Node node31 = node3.addChild(Card.of(Color.SPADE, Rank.SIX));
 		root.print("");
 	}
 	
@@ -66,7 +63,7 @@ class MctsPlayerTest {
 		for(int i = 1; i < 34; i++) {
 			turnState = turnState.withNewCardPlayedAndTrickCollected(turnState.unplayedCards().get(0));
 		}
-		Node root = new Node(turnState, null);
+		Node root = new Node(turnState, null, null, null);
 		List<Node> path;
 		for(int i = 0; i < 30; i++) {
 			path = mctsPlayer.growTreeByOneNode(root);

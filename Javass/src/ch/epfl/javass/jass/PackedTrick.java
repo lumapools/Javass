@@ -36,7 +36,7 @@ public final class PackedTrick {
     /*
      * Constantes liées aux valeurs
      */
-    private static final int MAX_INDEX_TRICK = 8;
+    private static final int MAX_INDEX_TRICK = Jass.TRICKS_PER_TURN-1;
     
     /* 
      * Constantes lié au jeu
@@ -410,7 +410,7 @@ public final class PackedTrick {
             else
                 representation += String.format("%4s, ", PackedCard.toString(card(pkTrick, i)));
         }
-        representation += "{" + points(pkTrick) + "}";
+        representation += " || " + points(pkTrick) + "}";
         return representation;
     }
 }

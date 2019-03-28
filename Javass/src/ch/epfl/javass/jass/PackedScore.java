@@ -62,6 +62,7 @@ public final class PackedScore {
      */
     public static boolean isValid(long pkScore) {
     	
+    	
         if (Bits64.extract(pkScore, TRICK_BITS_START_T1, NB_TRICK_BITS) > MAX_TRICKS_PER_TURN ||
                 Bits64.extract(pkScore, TURN_POINTS_START_T1, NB_TURN_POINTS_BITS) > MAX_TURN_POINTS ||
                 Bits64.extract(pkScore, GAME_POINTS_START_T1, NB_GAME_POINTS_BITS) > MAX_GAME_POINTS ||

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SplittableRandom;
 
+import javax.lang.model.element.NestingKind;
+
 import ch.epfl.javass.jass.Card.Color;
 import ch.epfl.javass.jass.Card.Rank;
 import ch.epfl.javass.jass.MctsPlayer.Node;
@@ -71,13 +73,12 @@ public final class MctsPlayer implements Player{
          * 			l'identifiant du joueur
          */
         public Node(TurnState turnState, CardSet hand,Card lastPlayedCard, PlayerId playerId) {
-        	MctsPlayer dummy = new MctsPlayer(PlayerId.PLAYER_1, 0, 10);
         	this.turnState = turnState;
-        	this.embryos = embryos();
-        	children = new Node[embryos.size()];
-        	this.lastPlayedCard = lastPlayedCard;
         	this.hand = hand;
         	this.playerId = playerId;	
+        	this.lastPlayedCard = lastPlayedCard;
+        	this.embryos = embryos();
+        	children = new Node[embryos.size()];
         }
         
         /**
@@ -225,18 +226,15 @@ public final class MctsPlayer implements Player{
      */
     public Score randomSimulate(TurnState turnState, CardSet myHand) {
 	    	while(!turnState.isTerminal()) {
-	    		//System.out.println(turnState);
-	    		//System.out.println("My hand: " + myHand);
 	    		if(!turnState.nextPlayer().equals(this.ownId)) {
 	    			CardSet playable = turnState.unplayedCards().difference(myHand);
 	    			Card card = playable.get(rng.nextInt(playable.size()));
 	    			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
 	    		}
 				else {
-					
 					CardSet playable = turnState.trick().playableCards(myHand);
 					int randomCardIndex = rng.nextInt(playable.size());
-					Card randomCardFromHand = myHand.get(randomCardIndex);
+					Card randomCardFromHand = playable.get(randomCardIndex);
 					turnState = turnState.withNewCardPlayedAndTrickCollected(randomCardFromHand);
 					myHand = myHand.remove(randomCardFromHand);
 				}
@@ -292,10 +290,17 @@ public final class MctsPlayer implements Player{
     public void computeAndUpdateScores(List<Node> path, CardSet hand) {
 		if(!path.isEmpty()) {
 			Node lastNode = path.get(path.size()-1);
-	    	Score lastScore = this.randomSimulate(lastNode.turnState, hand);
+	    	Score lastScore = this.randomSimulate(lastNode.turnState, lastNode.hand);
+	    	TeamId teamId = ownId.team();
 	    	for(Node n: path) { 
-	    		n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+	    		if(teamId == TeamId.TEAM_1) {
+	    			n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_1);
+	    		}
+	    		else {
+	    			n.totalScorePerNode += lastScore.totalPoints(TeamId.TEAM_2);
+	    		}
 	    		n.numSimulations += 1;
+	    		teamId = n.turnState.nextPlayer().team();
 	    	}
 		}
 	}

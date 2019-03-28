@@ -59,7 +59,9 @@ public final class TurnState {
      */
     public static TurnState ofPackedComponents(long pkScore, long pkUnplayedCards, int pkTrick) {
         Preconditions.checkArgument(PackedScore.isValid(pkScore) && PackedCardSet.isValid(pkUnplayedCards) && PackedTrick.isValid(pkTrick));
+    	
         return new TurnState(pkScore, pkUnplayedCards, pkTrick);
+        
     }
     
     /**
