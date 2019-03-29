@@ -31,6 +31,5 @@ public final class SilentPlayer implements Player{
         System.out.println("The winning team is " + winningTeam.name());
     }
     
-    
 
 }
