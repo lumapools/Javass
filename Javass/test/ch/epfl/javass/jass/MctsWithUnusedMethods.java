@@ -7,6 +7,7 @@ import java.util.SplittableRandom;
 
 import javax.lang.model.element.NestingKind;
 
+import ch.epfl.javass.Preconditions;
 import ch.epfl.javass.jass.Card.Color;
 import ch.epfl.javass.jass.Card.Rank;
 import ch.epfl.javass.jass.MctsWithUnusedMethods.Node;
@@ -35,10 +36,8 @@ public final class MctsWithUnusedMethods implements Player{
      *          lorsque le nombre d'itérations est inférieur à 9
      */
     public MctsWithUnusedMethods(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
-        
-    	if(iterations < 9) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(iterations >= Jass.HAND_SIZE);
+    	
     	this.rng = new SplittableRandom(rngSeed);
         this.ownId = ownId;
         this.rngSeed = rngSeed;
@@ -314,6 +313,7 @@ public final class MctsWithUnusedMethods implements Player{
 			if(!root.turnState.isTerminal()) {
 				path = growTreeByOneNode(root);
 				computeAndUpdateScores(path, hand);
+				root.print("");
 			}
 			
 		}

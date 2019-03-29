@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SplittableRandom;
 
-import javax.lang.model.element.NestingKind;
 
-import ch.epfl.javass.jass.Card.Color;
-import ch.epfl.javass.jass.Card.Rank;
-import ch.epfl.javass.jass.MctsPlayer.Node;
+
+import ch.epfl.javass.Preconditions;
 
 /**
  * Cette classe représente un joueur simulé au moyen de l'algorithme MCTS
@@ -37,9 +35,7 @@ public final class MctsPlayer implements Player{
      */
     public MctsPlayer(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
         
-    	if(iterations < 9) {
-            throw new IllegalArgumentException();
-        }
+    	Preconditions.checkArgument(iterations >= Jass.HAND_SIZE);
     	this.rng = new SplittableRandom(rngSeed);
         this.ownId = ownId;
         this.rngSeed = rngSeed;
@@ -51,7 +47,7 @@ public final class MctsPlayer implements Player{
      * @author Benedek Hauer (301364)
      * @author Emi Sakamoto (302290)
      */
-    public static class Node{
+    private static class Node{
     	
         private TurnState turnState;
         private CardSet hand;
@@ -75,7 +71,7 @@ public final class MctsPlayer implements Player{
          * @param playerId (PlayerId)
          * 			l'identifiant du joueur
          */
-        public Node(TurnState turnState, CardSet hand,Card lastPlayedCard, PlayerId playerId) {
+        private Node(TurnState turnState, CardSet hand,Card lastPlayedCard, PlayerId playerId) {
         	this.turnState = turnState;
         	this.hand = hand;
         	this.playerId = playerId;	
@@ -89,7 +85,7 @@ public final class MctsPlayer implements Player{
          * @return (CardSet)
          * 			l'ensemble des cartes pas encore jouées durant la partie
          */
-        public CardSet embryos() {
+        private CardSet embryos() {
         	if(turnState.nextPlayer().equals(this.playerId)) {
         		return turnState.trick().playableCards(hand);
         	}
@@ -126,9 +122,7 @@ public final class MctsPlayer implements Player{
         	if(numSimulations <= 0) {
         		return Double.POSITIVE_INFINITY;
         	}
-        	else {
-        		return totalScorePerNode/numSimulations + c * Math.sqrt(2*Math.log(parent.numSimulations)/(numSimulations));
-        	}
+        	return totalScorePerNode/numSimulations + c * Math.sqrt(2*Math.log(parent.numSimulations)/(numSimulations));
         } 
         
         /**
@@ -160,15 +154,6 @@ public final class MctsPlayer implements Player{
          */
         private boolean hasEmbryos() {
         	return !embryos.equals(CardSet.EMPTY);
-        }
-        
-        @Override
-        public String toString() {
-        	if(!turnState.isTerminal())
-        		return String.format("[%.2f, %d] %s ========= %s", 
-        				(double)totalScorePerNode/(double)numSimulations, 
-        				numSimulations, turnState.trick().toString(), embryos);
-        	return "";
         }
     }
     
@@ -212,7 +197,7 @@ public final class MctsPlayer implements Player{
         		return path;
         	}
         	if(root.children.length == 0) {
-        		return Collections.EMPTY_LIST;
+        		return Collections.emptyList();
     		}
         	else {
         		root = root.children[root.bestBranchFollowChild(Node.C_FOR_GROW)];

@@ -6,8 +6,6 @@ import java.util.Map;
 
 import ch.epfl.javass.jass.JassGame;
 import ch.epfl.javass.jass.MctsPlayer;
-import ch.epfl.javass.jass.PacedPlayer;
-//import ch.epfl.javass.jass.PacedPlayer;
 import ch.epfl.javass.jass.Player;
 import ch.epfl.javass.jass.PlayerId;
 public final class RandomJassGameSeb {
@@ -36,7 +34,6 @@ public final class RandomJassGameSeb {
             JassGame g = new JassGame(i, players, playerNames);
             while(!g.isGameOver()) {
                 g.advanceToEndOfNextTrick();
-                //System.out.println("----");
             }
 
             if(SilentPlayer.victoryTeam1) {

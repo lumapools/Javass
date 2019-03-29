@@ -180,7 +180,6 @@ public final class PackedScore {
      */
     public static long withAdditionalTrick(long pkScore, TeamId winningTeam, int trickPoints) {
 
-
         assert(isValid(pkScore));
         int tricksUpdated = turnTricks(pkScore, winningTeam) + 1;
         int scoreUpdated = turnPoints(pkScore, winningTeam) + trickPoints;
@@ -212,7 +211,6 @@ public final class PackedScore {
 	            if(tricksUpdated == Jass.TRICKS_PER_TURN)
 	                turnPoints2 += Jass.MATCH_ADDITIONAL_POINTS;
 	        }
-
         return pack(turnTricks1, turnPoints1, gamePoints1, turnTricks2, turnPoints2, gamePoints2);
     }
     
