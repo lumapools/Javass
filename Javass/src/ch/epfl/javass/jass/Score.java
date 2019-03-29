@@ -114,38 +114,29 @@ public final class Score {
     }
     
     
-    /**
-     * Redéfinition de la méthode equals de Object
-     * @return (boolean) vrai si c'est égal
-     */
+
     @Override
     public boolean equals(Object that0) {
         if(that0 == null) {
             return false;
-        }else {
+        }
+        else {
             if(that0.getClass() != getClass()) {
                 return false;
-            }else {
+            }
+            else {
                 Score score = (Score)that0;
                 return (this.packed() == score.packed());
             }
         }
     }
     
-    /**
-     * Redéfiniton de la méthode hashCode de Object
-     * Retourne la valeur produite par la méthode hashCode de la classe Long, appliquée au score empaqueté
-     * @return (int) le résultat de la méthode hashCode de la classe Long 
-     */
+    
     @Override
     public int hashCode() {
         return Long.hashCode(reprVerPacked);
     }
     
-    /**
-     * Redéfinition de la méthode toString de Object
-     * @return (String) (plis, partie courante, gamePoints, totalPoints)
-     */
     @Override
     public String toString() {
         return PackedScore.toString(reprVerPacked);

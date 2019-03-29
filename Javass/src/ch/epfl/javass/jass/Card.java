@@ -114,10 +114,12 @@ public final class Card {
     public boolean equals(Object that0) {
         if(that0 == null) {
             return false;
-        }else {
+        }
+        else {
             if(that0.getClass() != getClass()) {
                 return false;
-            }else {
+            }
+            else {
                 Card card = (Card)that0;
                 return (this.packed() == card.packed());
             }

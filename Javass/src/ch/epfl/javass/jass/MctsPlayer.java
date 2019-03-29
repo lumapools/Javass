@@ -61,6 +61,8 @@ public final class MctsPlayer implements Player{
         private int totalScorePerNode;
         private int numSimulations;
         private Card lastPlayedCard;
+        private final static int C_FOR_WIN = 0;
+        private final static int C_FOR_GROW = 40;
 
         /**
          * Constructeur 
@@ -129,23 +131,13 @@ public final class MctsPlayer implements Player{
         	}
         } 
         
-        @Override
-        public String toString() {
-        	if(!turnState.isTerminal())
-        		return String.format("[%.2f, %d] %s ========= %s", 
-        				(double)totalScorePerNode/(double)numSimulations, 
-        				numSimulations, turnState.trick().toString(), embryos);
-        	return "";
-        }
-        
-        
         /**
          * Remplit le tableau des enfants d'un noeud
          * @param card (Card) 
          * 			la carte jouée
          * @return (Node) le nouveau noeud crée à partir de cette insertion des enfants dans le tableau
          */
-        public Node addChild(Card card) {
+        private Node addChild(Card card) {
         	for(int i = 0; i < children.length; i++) {
         		if(children[i] == null) {
         			TurnState childsState = turnState.withNewCardPlayedAndTrickCollected(card);
@@ -166,21 +158,29 @@ public final class MctsPlayer implements Player{
          * Check si la liste des cartes injouées est vide
          * @return (boolean) vrai si pas toutes les cartes ont été jouées, faux sinon
          */
-        public boolean hasEmbryos() {
+        private boolean hasEmbryos() {
         	return !embryos.equals(CardSet.EMPTY);
+        }
+        
+        @Override
+        public String toString() {
+        	if(!turnState.isTerminal())
+        		return String.format("[%.2f, %d] %s ========= %s", 
+        				(double)totalScorePerNode/(double)numSimulations, 
+        				numSimulations, turnState.trick().toString(), embryos);
+        	return "";
         }
     }
     
-    
     /**
-     * Simule une partie entière à partir d'unr turnState
+     * Simule une partie entière à partir d'un turnState
      * @param turnState (TurnState) 
      * 			l'état du tout en cours
      * @param myHand (CardSet) 
      * 			la main du joueur 
      * @return (Score) le score final obtenu de turnState
      */
-    public Score randomSimulate(TurnState turnState, CardSet myHand) {
+    private Score randomSimulate(TurnState turnState, CardSet myHand) {
 	    	while(!turnState.isTerminal()) {
 	    		if(!turnState.nextPlayer().equals(this.ownId)) {
 	    			CardSet playable = turnState.unplayedCards().difference(myHand);
@@ -195,16 +195,15 @@ public final class MctsPlayer implements Player{
 					myHand = myHand.remove(randomCardFromHand);
 				}
 	    	}
-	    	return turnState.score();
-    	
+	    	return turnState.score();   	
     }
     
     /**
      * Ajoute un noeud au noeud parent pour l'enfant qui a la valeur V(n) la plus élevée
      * @param root (Node) la racine du noeud
-     * @return (List<Node>) Le chemin qui mène au noeud créé
+     * @return (List<Node>) Le chemin qui mène au noeud créé, ou une liste vide si on ne peut pas continuer sur l'arbre
      */
-    public List<Node> growTreeByOneNode(Node root) {
+    private List<Node> growTreeByOneNode(Node root) {
     	List<Node> path = new ArrayList<Node>();
     	while (true) {
     		path.add(root);
@@ -214,10 +213,9 @@ public final class MctsPlayer implements Player{
         	}
         	if(root.children.length == 0) {
         		return Collections.EMPTY_LIST;
-        		
     		}
         	else {
-        		root = root.children[root.bestBranchFollowChild(40)];
+        		root = root.children[root.bestBranchFollowChild(Node.C_FOR_GROW)];
         	}		
     	}    	
     }
@@ -230,7 +228,7 @@ public final class MctsPlayer implements Player{
      * @param hand (CardSet)
      * 			la main du joueur
      */
-    public void computeAndUpdateScores(List<Node> path, CardSet hand) {
+    private void computeAndUpdateScores(List<Node> path, CardSet hand) {
 		if(!path.isEmpty()) {
 			Node lastNode = path.get(path.size()-1);
 	    	Score lastScore = this.randomSimulate(lastNode.turnState, lastNode.hand);
@@ -258,8 +256,7 @@ public final class MctsPlayer implements Player{
 				path = growTreeByOneNode(root);
 				computeAndUpdateScores(path, hand);
 			}
-			
 		}
-		return root.children[root.bestBranchFollowChild(0)].lastPlayedCard;
+		return root.children[root.bestBranchFollowChild(Node.C_FOR_WIN)].lastPlayedCard;
     }
 }

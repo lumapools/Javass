@@ -61,8 +61,6 @@ public final class PackedScore {
      * @return (boolean) la valeur de la validité d'un score
      */
     public static boolean isValid(long pkScore) {
-    	
-    	
         if (Bits64.extract(pkScore, TRICK_BITS_START_T1, NB_TRICK_BITS) > MAX_TRICKS_PER_TURN ||
                 Bits64.extract(pkScore, TURN_POINTS_START_T1, NB_TURN_POINTS_BITS) > MAX_TURN_POINTS ||
                 Bits64.extract(pkScore, GAME_POINTS_START_T1, NB_GAME_POINTS_BITS) > MAX_GAME_POINTS ||
@@ -74,9 +72,7 @@ public final class PackedScore {
                 
                 return false;   
             }
-            else {
-                return true;
-            }
+            return true;
     }
     
     /**
@@ -114,7 +110,8 @@ public final class PackedScore {
         assert(isValid(pkScore));
         if(t.equals(TeamId.TEAM_1)) {
             return (int)Bits64.extract(pkScore, TRICK_BITS_START_T1, NB_TRICK_BITS);
-        }else {
+        }
+        else {
             return (int)Bits64.extract(pkScore, TRICK_BITS_START_T2, NB_TRICK_BITS);
         }
     }
@@ -131,7 +128,8 @@ public final class PackedScore {
         assert(isValid(pkScore));
         if(t.equals(TeamId.TEAM_1)) {
             return (int)Bits64.extract(pkScore, TURN_POINTS_START_T1, NB_TURN_POINTS_BITS);
-        }else {
+        }
+        else {
             return (int)Bits64.extract(pkScore, TURN_POINTS_START_T2, NB_TURN_POINTS_BITS);
         }
     }
@@ -148,7 +146,8 @@ public final class PackedScore {
         assert(isValid(pkScore));
         if(t.equals(TeamId.TEAM_1)) {
             return (int)Bits64.extract(pkScore, GAME_POINTS_START_T1, NB_GAME_POINTS_BITS);
-        }else {
+        }
+        else {
             return (int)Bits64.extract(pkScore, GAME_POINTS_START_T2, NB_GAME_POINTS_BITS);
         }
     }
@@ -202,16 +201,17 @@ public final class PackedScore {
             gamePoints2 = gamePoints(pkScore, TeamId.TEAM_2);
             if(tricksUpdated == Jass.TRICKS_PER_TURN)
                 turnPoints1 += Jass.MATCH_ADDITIONAL_POINTS;
-        } else {
-            turnTricks1 = turnTricks(pkScore, TeamId.TEAM_1);
-            turnPoints1 = turnPoints(pkScore, TeamId.TEAM_1);
-            gamePoints1 = gamePoints(pkScore, TeamId.TEAM_1);
-            turnTricks2 = tricksUpdated;
-            turnPoints2 = scoreUpdated;
-            gamePoints2 = gamePoints(pkScore, TeamId.TEAM_2);
-            if(tricksUpdated == Jass.TRICKS_PER_TURN)
-                turnPoints2 += Jass.MATCH_ADDITIONAL_POINTS;
-        }
+	        } 
+	        else {
+	            turnTricks1 = turnTricks(pkScore, TeamId.TEAM_1);
+	            turnPoints1 = turnPoints(pkScore, TeamId.TEAM_1);
+	            gamePoints1 = gamePoints(pkScore, TeamId.TEAM_1);
+	            turnTricks2 = tricksUpdated;
+	            turnPoints2 = scoreUpdated;
+	            gamePoints2 = gamePoints(pkScore, TeamId.TEAM_2);
+	            if(tricksUpdated == Jass.TRICKS_PER_TURN)
+	                turnPoints2 += Jass.MATCH_ADDITIONAL_POINTS;
+	        }
 
         return pack(turnTricks1, turnPoints1, gamePoints1, turnTricks2, turnPoints2, gamePoints2);
     }
@@ -234,19 +234,6 @@ public final class PackedScore {
      *          score empaquetée
      * @return(String) (plis, points partie courante, gamePoints, totalPoints)
      */
-    /*
-    public static String toString(long pkScore) {
-        return "(" + "TrickPT1: " + turnTricks(pkScore, TeamId.TEAM_1) + "," + 
-                     "TurnPT1: " + turnPoints(pkScore, TeamId.TEAM_1) + "," + 
-        		     "GamePT1: " + gamePoints(pkScore, TeamId.TEAM_1) + "," + 
-                     "TotPtT1: " + totalPoints(pkScore, TeamId.TEAM_1) + ")  /  (" + 
-        		     "TrickPT2: " + turnTricks(pkScore, TeamId.TEAM_2) + "," + 
-                     "TurnPT2: " + turnPoints(pkScore, TeamId.TEAM_2) + "," + 
-        		     "GamePT2: " + gamePoints(pkScore, TeamId.TEAM_2) + "," + 
-                     "TotPtT2: " + totalPoints(pkScore, TeamId.TEAM_2) + ")";
-    }
-    */
-    
     public static String toString(long pkScore) {
     	return String.format("(%d, %3d, %4d) (%d, %3d, %4d)" , turnTricks(pkScore, TeamId.TEAM_1), turnPoints(pkScore, TeamId.TEAM_1), gamePoints(pkScore, TeamId.TEAM_1),
     			turnTricks(pkScore, TeamId.TEAM_2), turnPoints(pkScore, TeamId.TEAM_2), gamePoints(pkScore, TeamId.TEAM_2));

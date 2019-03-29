@@ -14,8 +14,7 @@ import ch.epfl.javass.jass.Card.Color;
 public final class TurnState {
     private final long currentScore; //score actuel
     private final long unplayedCards; //l'ensemble des cartes qui n'ont pas encore été jouées durant le tour
-    //TODO CHANGER EN PRIVATE
-    public final int currentTrick; //pli actuel
+    private final int currentTrick; //pli actuel
     
     /**
      * Constructeur privé
@@ -59,7 +58,6 @@ public final class TurnState {
      */
     public static TurnState ofPackedComponents(long pkScore, long pkUnplayedCards, int pkTrick) {
         Preconditions.checkArgument(PackedScore.isValid(pkScore) && PackedCardSet.isValid(pkUnplayedCards) && PackedTrick.isValid(pkTrick));
-    	
         return new TurnState(pkScore, pkUnplayedCards, pkTrick);
         
     }
@@ -159,16 +157,19 @@ public final class TurnState {
      * @throws IllegalStateException si le pli n'est pas plein
      */
     
-    public TurnState withTrickCollected() {
-        if(!trick().isFull())
+    public TurnState withTrickCollected() throws IllegalStateException {
+        if(!trick().isFull()) {
             throw new IllegalStateException();
+        }
         PlayerId winningPlayer = trick().winningPlayer();
         Score newScore = score().withAdditionalTrick(winningPlayer.team(), trick().points());
         Trick nextTrick;
-        if(trick().isLast())
+        if(trick().isLast()) {
             nextTrick = Trick.firstEmpty(trick().trump(), trick().winningPlayer());
-        else
+        }
+        else {
             nextTrick = trick().nextEmpty();
+        }
         return TurnState.ofPackedComponents(newScore.packed(), unplayedCards().packed(), nextTrick.packed());
     }
     
@@ -180,7 +181,7 @@ public final class TurnState {
      * @return (TurnState) l'état correspondant
      * @throws IllegalStateException si le pli courant avant d'ajouter la carte est plein
      */
-    public TurnState withNewCardPlayedAndTrickCollected(Card card) throws IllegalStateException{
+    public TurnState withNewCardPlayedAndTrickCollected(Card card) throws IllegalStateException {
         assert(PackedCard.isValid(card.packed()));
         if(PackedTrick.isFull(currentTrick)) {
             throw new IllegalStateException();

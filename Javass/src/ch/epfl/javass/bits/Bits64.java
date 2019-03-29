@@ -35,20 +35,15 @@ public final class Bits64 {
             return 0;
         }
         else {
-            if((start < 0) || (start > Long.SIZE) || start + size > Long.SIZE || size < 0) {
-                Preconditions.checkArgument(false);
-            }
-            else {
-                if(start + size == Long.SIZE) {
-                    return ((1L << start + size)-1L) - (1L<<start);
-                }
-                else {
-                    return((1L << start + size)-1L) - ((1L<<start)-1L);
-                }
-            }
-        }
-        return 0L;
+        	Preconditions.checkArgument(!(start < 0 || start > Long.SIZE || start + size > Long.SIZE || size < 0));
        
+	        if(start + size == Long.SIZE) {
+	            return ((1L << start + size)-1L) - (1L<<start);
+	        }
+	        else {
+	            return((1L << start + size)-1L) - ((1L<<start)-1L);
+	        }
+        }
     }
     
     /**
@@ -66,13 +61,8 @@ public final class Bits64 {
      * @return (long) le nombre final qui a été extrait de bits
      */
     public static long extract(long bits, int start, int size) {
-        if((start < 0) || (start > Long.SIZE) || start + size > Long.SIZE || size < 0) {
-            Preconditions.checkArgument(false);
-        }
-        else {
-            return ((bits << (Long.SIZE-(start+size)) >>> Long.SIZE-size));
-        }
-        return 0L;
+    	Preconditions.checkArgument(!(start < 0 || start > Long.SIZE || start + size > Long.SIZE || size < 0));
+        return ((bits << (Long.SIZE-(start+size)) >>> Long.SIZE-size));
     }
     
     /**
@@ -93,13 +83,8 @@ public final class Bits64 {
      * @return (long) les bits mis bout à bout par la méthode 
      */
     public static long pack(long v1, int s1, long v2, int s2) throws IllegalArgumentException {
-        if(s1 < 0 || s2 < 0 || s1+s2 > Long.SIZE || !packVerify(v1,s1) || !packVerify(v2,s2))  {
-            Preconditions.checkArgument(false);
-        }
-        else {
-            return (v1 | (v2 << s1));
-        }
-        return 0L;
+    	Preconditions.checkArgument(!(s1 < 0 || s2 < 0 || s1+s2 > Long.SIZE || !packVerify(v1,s1) || !packVerify(v2,s2)));
+        return (v1 | (v2 << s1));
     }
     
     /**
@@ -115,14 +100,7 @@ public final class Bits64 {
         if (taille < 1 || taille > (Long.SIZE-1)) {
              return false;
         }
-        else {
-            if (Math.pow(2, taille)-1 < valeur) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
+        return Math.pow(2, taille)-1 >= valeur;
     }
     
 }

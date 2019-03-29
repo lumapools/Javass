@@ -59,7 +59,6 @@ public final class PackedCardSet {
      */
     private PackedCardSet() {}
     
-    
     /**
      * Check si un ensemble de carte est valide
      * @param pkCardSet (long)

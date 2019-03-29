@@ -90,7 +90,9 @@ public final class JassGame {
         }
     }
     
-    
+    /**
+     * Mélange les cartes et les distribue
+     */
     private void shuffleDeckAndDistribute(){
         int deckSize = CardSet.ALL_CARDS.size();
         List<Card> deck = new ArrayList<>();
@@ -101,6 +103,9 @@ public final class JassGame {
             playerCardSet.put(PlayerId.values()[i], CardSet.of(deck.subList(i*deckSize/4, (i+1)*deckSize/4)));
     }
     
+    /**
+     * Commence un nouveau tour
+     */
     private void startNewTurn() {
         chooseAndSetTrump();
         for(PlayerId pId: PlayerId.ALL) {
@@ -110,6 +115,9 @@ public final class JassGame {
         turnState = TurnState.initial(trump, turnState.score().nextTurn(), firstPlayer);
     }
     
+    /**
+     * Commence une nouvelle partie
+     */
     private void startNewGame() {
         chooseAndSetTrump();
         for (Map.Entry<PlayerId, CardSet> e: playerCardSet.entrySet()) {
@@ -125,6 +133,9 @@ public final class JassGame {
         turnState = TurnState.initial(trump, Score.INITIAL, firstPlayer);
     }
     
+    /**
+     * Fait jouer un joueur
+     */
     private void playerPlays() {
         for (int i=0; i<4; ++i) {
                  Card c = players.get(turnState.nextPlayer()).cardToPlay(turnState, playerCardSet.get(turnState.nextPlayer()));
@@ -136,29 +147,56 @@ public final class JassGame {
         }
     }
     
+    /**
+     * Met à jour la main du joueur voulu
+     * @param playerId (PlayerId)
+     * 			le joueur dont on veut mettre la main à jour
+     */
     private void updateHand(PlayerId playerId) {
         players.get(playerId).updateHand(playerCardSet.get(playerId));
     }
     
+    /**
+     * Enlève une carte de la main d'un joueur
+     * @param playerId (PlayerId)
+     * 			l'identifiant du joueur 
+     * @param card (Card)
+     * 			la carte à enlever
+     */
     private void removeCard(PlayerId playerId, Card card) {
         playerCardSet.put(playerId, playerCardSet.get(playerId).remove(card));
     }
+    
+    /**
+     * Met à jour le pli
+     */
     private void updateTrick() {
         for(PlayerId pId: PlayerId.ALL) {
             players.get(pId).updateTrick(turnState.trick());
         }
     }
     
+    /**
+     * Met à jour le score 
+     */
     private void updateScore() {
         for(PlayerId pId: PlayerId.ALL) {
             players.get(pId).updateScore(turnState.score());
         }
     }
     
+    /**
+     * Donne l'atout aléatoirement
+     */
     private void chooseAndSetTrump() {
         trump = Color.ALL.get(trumpRng.nextInt(4));
     }
     
+    /**
+     * Donne l'équipe gagnante selon chaque joueur
+     * @param t (TeamId)
+     * 			l'identifiant de l'équipe
+     */
     private void setWinningTeam(TeamId t) {
         for(PlayerId pId: PlayerId.ALL) {
           players.get(pId).setWinningTeam(t);

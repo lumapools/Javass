@@ -32,8 +32,7 @@ public enum TeamId {
     public TeamId other() {
         if(this.equals(TEAM_1)) {
             return TEAM_2;
-        }else {
-            return TEAM_1;
         }
+        return TEAM_1;
     }
 }

@@ -70,10 +70,8 @@ final public class Bits32 {
         if((start < 0) || (start > Integer.SIZE) || start + size > Integer.SIZE || size < 0) {
             Preconditions.checkArgument(false);
         }
-        else {
-            return ((bits << (Integer.SIZE-(start+size)) >>> Integer.SIZE-size));
-        }
-        return 0;
+        return ((bits << (Integer.SIZE-(start+size)) >>> Integer.SIZE-size));
+        
     }
    
     /**
@@ -97,10 +95,7 @@ final public class Bits32 {
         if(s1 < 0 || s2 < 0 || s1+s2 > Integer.SIZE || !packVerify(v1,s1) || !packVerify(v2,s2))  {
             Preconditions.checkArgument(false);
         }
-        else {
-            return (v1 | (v2 << s1));
-        }
-        return 0;
+        return (v1 | (v2 << s1));
         
     }
     /**
@@ -178,16 +173,13 @@ final public class Bits32 {
                 !packVerify(v7,s7)) {
             Preconditions.checkArgument(false);
         }
-        else {
-            return (v1 | (v2 << s1) | (v3 << s2+s1) | (v4 << s3+s2+s1) |
-                     (v5 << s4+s3+s2+s1) | (v6 << s5+s4+s3+s2+s1) | (v7 << s6+s5+s4+s3+s2+s1));
-        }
-        return 0;
+        return (v1 | (v2 << s1) | (v3 << s2+s1) | (v4 << s3+s2+s1) |
+                (v5 << s4+s3+s2+s1) | (v6 << s5+s4+s3+s2+s1) | (v7 << s6+s5+s4+s3+s2+s1));
     }
 
     /**
      * Vérifie si une paire valeur/taille est valable. Càd: Si la taille (en bits) est plus 
-     * petite que la taille en bits occupée normalement par la valeur, il retourne fase
+     * petite que la taille en bits occupée normalement par la valeur, il retourne false
      * @param valeur (int)
      *          valeur à vérifier
      * @param taille (int)
@@ -198,13 +190,7 @@ final public class Bits32 {
         if (taille < 1 || taille > (Integer.SIZE-1)) {
              return false;
         }
-        else {
-            if (Math.pow(2, taille)-1 < valeur) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
+        return (Math.pow(2,  taille)-1 >= valeur);
+        
     }
 }

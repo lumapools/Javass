@@ -40,9 +40,7 @@ public class Preconditions {
         if((index < 0) || (index >= size)) {
             throw new IndexOutOfBoundsException();
         }
-        else {
-            return index;
-        }
+        return index;
     }
     
     

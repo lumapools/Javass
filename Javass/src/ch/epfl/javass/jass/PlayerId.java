@@ -31,10 +31,9 @@ public enum PlayerId {
      * @return (TeamId) l'identité de l'équipe
      */
     public TeamId team() {
-        if(this.equals(PLAYER_1)||this.equals(PLAYER_3)) {
+        if(this.equals(PLAYER_1) || this.equals(PLAYER_3)) {
             return TeamId.TEAM_1;
-        }else {
-            return TeamId.TEAM_2;
         }
+        return TeamId.TEAM_2;
     }
 }

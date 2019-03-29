@@ -81,9 +81,12 @@ public final class Trick {
         if(!PackedTrick.isFull(packedTrick)) {
             throw new IllegalStateException();
         }
+        /*
         else {
             return new Trick(PackedTrick.nextEmpty(packedTrick));
         }
+        */
+        return new Trick(PackedTrick.nextEmpty(packedTrick));
     }
     
     /**
@@ -145,9 +148,7 @@ public final class Trick {
         if(index < MIN_INDEX || index >= NB_PLAYER) {
             throw new IndexOutOfBoundsException();
         }
-        else {
-            return PackedTrick.player(packedTrick, index);
-        }
+        return PackedTrick.player(packedTrick, index);
     }
     
     /**
@@ -160,9 +161,7 @@ public final class Trick {
         if(index < MIN_INDEX || index >= this.size()) {
             throw new IndexOutOfBoundsException();
         }
-        else {
-            return Card.ofPacked(PackedTrick.card(packedTrick, index));
-        }
+        return Card.ofPacked(PackedTrick.card(packedTrick, index));
     }
     
     /**
@@ -244,19 +243,13 @@ public final class Trick {
         }
     }
     
-    /**
-     * Redéfiniton de la méthode hashCode de Object
-     * @return (int) la version empaqueté du pli
-     */
+    
     @Override
     public int hashCode() {
         return packedTrick;
     }
     
-    /**
-     * Redéfinition de la méthode toString de Object
-     * @return (String) (Tour : x, les cartes jouées, nombre de points)
-     */
+    
     @Override
     public String toString() {
         return PackedTrick.toString(packedTrick);
