@@ -1,4 +1,4 @@
-package ch.epfl.javass;
+package ch.epfl.javass.jass;
 
 import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
 import static ch.epfl.test.TestRandomizer.newRandom;
@@ -10,10 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.SplittableRandom;
 
 import org.junit.jupiter.api.Test;
-
-import ch.epfl.javass.jass.PackedScore;
-import ch.epfl.javass.jass.Score;
-import ch.epfl.javass.jass.TeamId;
 
 public class ScoreTest {
     private static long randomPkScore(SplittableRandom rng) {

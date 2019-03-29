@@ -1,4 +1,4 @@
-package ch.epfl.javass;
+package ch.epfl.javass.jass;
 
 import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
 import static ch.epfl.test.TestRandomizer.newRandom;
@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.SplittableRandom;
 
 import org.junit.jupiter.api.Test;
+
+import ch.epfl.javass.Preconditions;
 
 public final class PreconditionsTest {
     @Test

@@ -102,7 +102,6 @@ public final class CardSetTest {
             Collections.shuffle(cs, new Random(rng.nextLong()));
             int s = rng.nextInt(cs.size());
             CardSet set = CardSet.of(cs.subList(0, s));
-            System.out.println(set);
             assertEquals(s, set.size());
         }
     }

@@ -221,4 +221,275 @@ public class PackedCardSetTest {
             assertEquals(c, PackedCardSet.get(ALL_SINGLETONS[i++], 0));
         }
     }
+
+    @Test
+    void addCanBuildFullSet() {
+        long s = PackedCardSet.EMPTY;
+        int expectedSize = 0;
+        for (int c: ALL_PACKED_CARDS) {
+            s = PackedCardSet.add(s, c);
+            expectedSize += 1;
+            assertEquals(expectedSize, PackedCardSet.size(s));
+        }
+        assertEquals(FULL_SET, s);
+    }
+
+    @Test
+    void addIsIdempotent() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            int c = nextCard(rng);
+            s = PackedCardSet.add(s, c);
+            assertEquals(s, PackedCardSet.add(s, c));
+        }
+    }
+
+    @Test
+    void addDoesAdd() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            int c = nextCard(rng);
+            s = PackedCardSet.add(s, c);
+            assertTrue(PackedCardSet.contains(s, c));
+        }
+    }
+
+    @Test
+    void removeCanEmptyFullSet() {
+        long s = PackedCardSet.ALL_CARDS;
+        int expectedSize = 36;
+        for (int c: ALL_PACKED_CARDS) {
+            s = PackedCardSet.remove(s, c);
+            expectedSize -= 1;
+            assertEquals(expectedSize, PackedCardSet.size(s));
+        }
+        assertEquals(EMPTY_SET, s);
+    }
+
+    @Test
+    void removeIsIdempotent() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            int c = nextCard(rng);
+            s = PackedCardSet.remove(s, c);
+            assertEquals(s, PackedCardSet.remove(s, c));
+        }
+    }
+
+    @Test
+    void containsWorksOnEmptySet() {
+        long s = PackedCardSet.EMPTY;
+        for (int c: ALL_PACKED_CARDS) {
+            assertFalse(PackedCardSet.contains(s, c));
+        }
+    }
+
+    @Test
+    void containsWorksOnFullSet() {
+        long s = PackedCardSet.ALL_CARDS;
+        for (int c: ALL_PACKED_CARDS) {
+            assertTrue(PackedCardSet.contains(s, c));
+        }
+    }
+
+    @Test
+    void complementWorksOnEmptyAndFullSets() {
+        assertEquals(PackedCardSet.ALL_CARDS, PackedCardSet.complement(PackedCardSet.EMPTY));
+        assertEquals(PackedCardSet.EMPTY, PackedCardSet.complement(PackedCardSet.ALL_CARDS));
+    }
+
+    @Test
+    void complementIsItsOwnInverse() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            long sC = PackedCardSet.complement(s);
+            assertNotEquals(s, sC);
+            assertEquals(s, PackedCardSet.complement(sC));
+        }
+    }
+
+    @Test
+    void sizeOfComplementIsComplementOfSize() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            long sC = PackedCardSet.complement(s);
+            assertEquals(36 - PackedCardSet.size(s), PackedCardSet.size(sC));
+        }
+    }
+
+    @Test
+    void unionWorksOnEmptyAndFullSets() {
+        assertEquals(PackedCardSet.EMPTY, PackedCardSet.union(PackedCardSet.EMPTY, PackedCardSet.EMPTY));
+        assertEquals(PackedCardSet.ALL_CARDS, PackedCardSet.union(PackedCardSet.ALL_CARDS, PackedCardSet.ALL_CARDS));
+    }
+
+    @Test
+    void unionWithItselfIsItself() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            assertEquals(s, PackedCardSet.union(s, s));
+        }
+    }
+
+    @Test
+    void unionWithComplementProducesFullSet() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            long sC = PackedCardSet.complement(s);
+            assertEquals(PackedCardSet.ALL_CARDS, PackedCardSet.union(s, sC));
+        }
+    }
+
+    @Test
+    void unionIsAssociative() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s1 = nextSet(rng);
+            long s2 = nextSet(rng);
+            long s3 = nextSet(rng);
+
+            long u1 = PackedCardSet.union(PackedCardSet.union(s1, s2), s3);
+            long u2 = PackedCardSet.union(s1, PackedCardSet.union(s2, s3));
+
+            assertEquals(u1, u2);
+        }
+    }
+
+    @Test
+    void unionIsCommutative() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s1 = nextSet(rng);
+            long s2 = nextSet(rng);
+
+            long u1 = PackedCardSet.union(s1, s2);
+            long u2 = PackedCardSet.union(s2, s1);
+
+            assertEquals(u1, u2);
+        }
+    }
+
+    @Test
+    void intersectionWorksOnEmptyAndFullSets() {
+        assertEquals(PackedCardSet.EMPTY, PackedCardSet.intersection(PackedCardSet.EMPTY, PackedCardSet.EMPTY));
+        assertEquals(PackedCardSet.ALL_CARDS, PackedCardSet.intersection(PackedCardSet.ALL_CARDS, PackedCardSet.ALL_CARDS));
+    }
+
+    @Test
+    void intersectionWithItselfIsItself() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            assertEquals(s, PackedCardSet.intersection(s, s));
+        }
+    }
+
+    @Test
+    void intersectionWithComplementProducesEmptySet() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            long sC = PackedCardSet.complement(s);
+            assertEquals(PackedCardSet.EMPTY, PackedCardSet.intersection(s, sC));
+        }
+    }
+
+    @Test
+    void intersectionIsAssociative() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s1 = nextSet(rng);
+            long s2 = nextSet(rng);
+            long s3 = nextSet(rng);
+
+            long u1 = PackedCardSet.intersection(PackedCardSet.intersection(s1, s2), s3);
+            long u2 = PackedCardSet.intersection(s1, PackedCardSet.intersection(s2, s3));
+
+            assertEquals(u1, u2);
+        }
+    }
+
+    @Test
+    void intersectionIsCommutative() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s1 = nextSet(rng);
+            long s2 = nextSet(rng);
+
+            long u1 = PackedCardSet.intersection(s1, s2);
+            long u2 = PackedCardSet.intersection(s2, s1);
+
+            assertEquals(u1, u2);
+        }
+    }
+
+    @Test
+    void differenceWorksOnEmptyAndFullSets() {
+        assertEquals(PackedCardSet.EMPTY, PackedCardSet.difference(PackedCardSet.EMPTY, PackedCardSet.EMPTY));
+        assertEquals(PackedCardSet.EMPTY, PackedCardSet.difference(PackedCardSet.ALL_CARDS, PackedCardSet.ALL_CARDS));
+    }
+
+    @Test
+    void differenceWithItselfIsEmpty() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            assertEquals(PackedCardSet.EMPTY, PackedCardSet.difference(s, s));
+        }
+    }
+
+    @Test
+    void differenceWithComplementIsItself() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            long sC = PackedCardSet.complement(s);
+            assertEquals(s, PackedCardSet.difference(s, sC));
+        }
+    }
+
+    @Test
+    void differenceDoesNotMakeSetGrow() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s1 = nextSet(rng);
+            long s2 = nextSet(rng);
+            long d12 = PackedCardSet.difference(s1, s2);
+            assertTrue(PackedCardSet.size(d12) <= PackedCardSet.size(s1));
+            long d21 = PackedCardSet.difference(s2, s1);
+            assertTrue(PackedCardSet.size(d21) <= PackedCardSet.size(s2));
+        }
+    }
+
+    @Test
+    void subsetOfColorHasRightSize() {
+        for (Color c: Color.ALL) {
+            assertEquals(9, PackedCardSet.size(PackedCardSet.subsetOfColor(PackedCardSet.ALL_CARDS, c)));
+        }
+    }
+
+    @Test
+    void subsetOfColorWorks() {
+        SplittableRandom rng = newRandom();
+        for (int i = 0; i < RANDOM_ITERATIONS; ++i) {
+            long s = nextSet(rng);
+            Color c = Color.ALL.get(rng.nextInt(Color.COUNT));
+
+            long expectedS = PackedCardSet.EMPTY;
+            for (int j = 0; j < PackedCardSet.size(s); ++j) {
+                int pkCard = PackedCardSet.get(s, j);
+                if (PackedCard.color(pkCard) == c)
+                    expectedS = PackedCardSet.add(expectedS, pkCard);
+            }
+
+            assertEquals(expectedS, PackedCardSet.subsetOfColor(s, c));
+        }
+    }
 }

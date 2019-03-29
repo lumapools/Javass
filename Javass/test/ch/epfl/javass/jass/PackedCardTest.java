@@ -10,9 +10,6 @@ import java.util.SplittableRandom;
 
 import org.junit.jupiter.api.Test;
 
-import ch.epfl.javass.jass.Card;
-import ch.epfl.javass.jass.PackedCard;
-
 public final class PackedCardTest {
     private static Card.Color[] getAllColors() {
         return new Card.Color[] {
