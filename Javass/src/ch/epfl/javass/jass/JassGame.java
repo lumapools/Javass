@@ -44,7 +44,6 @@ public final class JassGame {
         Random rng = new Random(rngSeed);
         this.shuffleRng = new Random(rng.nextLong());
         this.trumpRng = new Random(rng.nextLong());
-        turnState = TurnState.ofPackedComponents(0L, 0L, 0);
     }
     
     /**
@@ -52,14 +51,18 @@ public final class JassGame {
      * @return (boolean)  vrai ssi la partie est terminée
      */
     public boolean isGameOver() {
-        for (TeamId t: TeamId.ALL) {
-            if(turnState.score().totalPoints(t) >= Jass.WINNING_POINTS) {
-                if(!alreadySaid) {
-                    setWinningTeam(t);
-                    alreadySaid = true;
+        if(turnState != null) {
+            for (TeamId t: TeamId.ALL) {
+                if(turnState.score().totalPoints(t) >= Jass.WINNING_POINTS) {
+                    if(!alreadySaid) {
+                        updateScore();
+                        setWinningTeam(t);
+                        alreadySaid = true;
+                    }
+                    return true;
                 }
-                return true;
             }
+            return false;
         }
         return false;
     }
@@ -71,132 +74,101 @@ public final class JassGame {
         if(isGameOver()) {
             return;
         }
-        if(turnState.packedScore() == 0L && turnState.packedUnplayedCards() == 0L && turnState.packedTrick() == 0) {
-            shuffleDeckAndDistribute();
+        if(turnState == null) {
             startNewGame();
         }else {
             turnState = turnState.withTrickCollected();
-            updateScore();
             
         }
         if(isGameOver()) {
         } else {
             if(turnState.isTerminal()) {
-                shuffleDeckAndDistribute();
                 startNewTurn();
             }
+            updateScore();
             updateTrick();
             playerPlays();
         }
     }
     
-    /**
-     * Mélange les cartes et les distribue
-     */
+    
     private void shuffleDeckAndDistribute(){
-        int deckSize = CardSet.ALL_CARDS.size();
         List<Card> deck = new ArrayList<>();
-        for(int i=0; i< deckSize;i++)
-            deck.add(CardSet.ALL_CARDS.get(i));
+        for(Color c : Color.ALL) {
+            for(Rank r: Rank.ALL) {
+                deck.add(Card.of(c, r));
+            }
+        }
         Collections.shuffle(deck, shuffleRng);
-        for(int i=0; i<4; i++ )
-            playerCardSet.put(PlayerId.values()[i], CardSet.of(deck.subList(i*deckSize/4, (i+1)*deckSize/4)));
+        playerCardSet.put(PlayerId.PLAYER_1, CardSet.of(deck.subList(0, 9)));
+        playerCardSet.put(PlayerId.PLAYER_2, CardSet.of(deck.subList(9, 18)));
+        playerCardSet.put(PlayerId.PLAYER_3, CardSet.of(deck.subList(18, 27)));
+        playerCardSet.put(PlayerId.PLAYER_4, CardSet.of(deck.subList(27, 36)));
     }
     
-    /**
-     * Commence un nouveau tour
-     */
     private void startNewTurn() {
+        shuffleDeckAndDistribute();
         chooseAndSetTrump();
         for(PlayerId pId: PlayerId.ALL) {
             updateHand(pId);
+            setTrumpPlayer(pId);
         }
         firstPlayer = PlayerId.ALL.get((firstPlayer.ordinal()+1)%4);
         turnState = TurnState.initial(trump, turnState.score().nextTurn(), firstPlayer);
     }
     
-    /**
-     * Commence une nouvelle partie
-     */
     private void startNewGame() {
+        shuffleDeckAndDistribute();
         chooseAndSetTrump();
         for (Map.Entry<PlayerId, CardSet> e: playerCardSet.entrySet()) {
             players.get(e.getKey()).setPlayers(e.getKey(), playerNames);
-            if(e.getValue().contains(Jass.STARTING_CARD))
+            if(e.getValue().contains(Card.of(Color.DIAMOND, Rank.SEVEN)))
                  firstPlayer = e.getKey();
         }
         for(PlayerId pId: PlayerId.ALL) {
             updateHand(pId);
-            players.get(pId).setTrump(trump);
+            setTrumpPlayer(pId);
         }
-        updateScore();
         turnState = TurnState.initial(trump, Score.INITIAL, firstPlayer);
     }
     
-    /**
-     * Fait jouer un joueur
-     */
     private void playerPlays() {
         for (int i=0; i<4; ++i) {
-                 Card c = players.get(turnState.nextPlayer()).cardToPlay(turnState, playerCardSet.get(turnState.nextPlayer()));
-                 removeCard(turnState.nextPlayer(), c);
-                 updateHand(turnState.nextPlayer());
-                 turnState = turnState.withNewCardPlayed(c);
-                 updateTrick();
-                 
+            Card c = players.get(turnState.nextPlayer()).cardToPlay(turnState, playerCardSet.get(turnState.nextPlayer()));
+            removeCard(turnState.nextPlayer(), c);
+            updateHand(turnState.nextPlayer());
+            turnState = turnState.withNewCardPlayed(c);
+            updateTrick();
         }
     }
     
-    /**
-     * Met à jour la main du joueur voulu
-     * @param playerId (PlayerId)
-     * 			le joueur dont on veut mettre la main à jour
-     */
     private void updateHand(PlayerId playerId) {
         players.get(playerId).updateHand(playerCardSet.get(playerId));
     }
     
-    /**
-     * Enlève une carte de la main d'un joueur
-     * @param playerId (PlayerId)
-     * 			l'identifiant du joueur 
-     * @param card (Card)
-     * 			la carte à enlever
-     */
+    private void setTrumpPlayer(PlayerId playerId) {
+        players.get(playerId).setTrump(trump);
+    }
+    
     private void removeCard(PlayerId playerId, Card card) {
         playerCardSet.put(playerId, playerCardSet.get(playerId).remove(card));
     }
-    
-    /**
-     * Met à jour le pli
-     */
     private void updateTrick() {
         for(PlayerId pId: PlayerId.ALL) {
             players.get(pId).updateTrick(turnState.trick());
         }
     }
     
-    /**
-     * Met à jour le score 
-     */
     private void updateScore() {
         for(PlayerId pId: PlayerId.ALL) {
             players.get(pId).updateScore(turnState.score());
         }
     }
     
-    /**
-     * Donne l'atout aléatoirement
-     */
     private void chooseAndSetTrump() {
         trump = Color.ALL.get(trumpRng.nextInt(4));
     }
     
-    /**
-     * Donne l'équipe gagnante selon chaque joueur
-     * @param t (TeamId)
-     * 			l'identifiant de l'équipe
-     */
     private void setWinningTeam(TeamId t) {
         for(PlayerId pId: PlayerId.ALL) {
           players.get(pId).setWinningTeam(t);

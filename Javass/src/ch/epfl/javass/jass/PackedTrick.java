@@ -305,7 +305,7 @@ public final class PackedTrick {
         int nb = 0;
         for(int i = 0; i < s; ++i) {
             if(PackedCard.color(card(pkTrick, i)) == trump(pkTrick)) {
-                ++nb;
+                nb = i;
             }
         }
         
