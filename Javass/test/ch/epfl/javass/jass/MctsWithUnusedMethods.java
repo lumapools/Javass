@@ -9,7 +9,7 @@ import javax.lang.model.element.NestingKind;
 
 import ch.epfl.javass.jass.Card.Color;
 import ch.epfl.javass.jass.Card.Rank;
-import ch.epfl.javass.jass.MctsPlayer.Node;
+import ch.epfl.javass.jass.MctsWithUnusedMethods.Node;
 
 /**
  * Cette classe représente un joueur simulé au moyen de l'algorithme MCTS
@@ -17,12 +17,11 @@ import ch.epfl.javass.jass.MctsPlayer.Node;
  * @author Emi Sakamoto (302290)
  *
  */
-public final class MctsPlayer implements Player{
+public final class MctsWithUnusedMethods implements Player{
     private PlayerId ownId;
     private long rngSeed;
     public int iterations;
     SplittableRandom rng;
-    
      
     /**
      * Construit un joueur simulé
@@ -35,7 +34,7 @@ public final class MctsPlayer implements Player{
      * @throw IllegalArgumentException 
      *          lorsque le nombre d'itérations est inférieur à 9
      */
-    public MctsPlayer(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
+    public MctsWithUnusedMethods(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
         
     	if(iterations < 9) {
             throw new IllegalArgumentException();
@@ -138,6 +137,51 @@ public final class MctsPlayer implements Player{
         	return "";
         }
         
+        /**
+         * Méthode pour pouvoir représenter un arbre dans la console
+         * @param prefix (String) la chaîne qui va faire décaler le texte à chaque passage à une nouvelle génération
+         */
+        public void print(String prefix) {
+        	System.out.print(prefix);
+        	System.out.println(toString());
+	        for(Node child: children) {
+	        	if(child != null) {
+	        		child.print("   " + prefix);
+	        	}
+        	}
+        }
+        
+        /**
+         * Méthode pour pouvoir représenter un arbre dans la console selon une profondeur maximale donnée
+         * @param maxDepth (int) profondeur maximale voulue
+         */
+        public void print(int maxDepth) {
+        	print(0, maxDepth);
+        }
+        
+        /**
+         * Méthode pour pouvoir représenter un arbre dans la console.
+         * @param depth (int)
+         * 			la profondeur de la chaîne dans l'arbre
+         * @param maxDepth (int)
+         * 			la profondeur maximale
+         */
+        public void print(int depth, int maxDepth) {
+        	if(depth > maxDepth) {
+        		return;
+        	}
+        	for(int i = 0; i < depth; i++) {
+        		System.out.print("   ");
+        	}
+        	System.out.println(toString());
+	        for(Node child: children) {
+	        	if(child != null) {
+	        		child.print(depth + 1, maxDepth);
+	        	}
+	        	
+        	}
+
+        }
         
         /**
          * Remplit le tableau des enfants d'un noeud
@@ -197,6 +241,19 @@ public final class MctsPlayer implements Player{
 	    	}
 	    	return turnState.score();
     	
+    }
+    
+    
+    public Score randomSimulatePrimitiveMcts(TurnState turnState) {
+    	//while(!turnState.unplayedCards().isEmpty()) {
+    	while(!turnState.isTerminal()) {
+			CardSet playable = turnState.unplayedCards();
+			Card card = playable.get(rng.nextInt(playable.size()));
+			turnState = turnState.withNewCardPlayedAndTrickCollected(card);
+		}
+    	long packedScore = turnState.packedScore();
+    	Score score = Score.ofPacked(packedScore);
+		return score;
     }
     
     /**
