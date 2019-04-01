@@ -182,10 +182,12 @@ public final class CardSet {
     public boolean equals(Object that0) {
         if(that0 == null) {
             return false;
-        }else {
+        }
+        else {
             if(that0.getClass() != getClass()) {
                 return false;
-            }else {
+            }
+            else {
                 CardSet card = (CardSet)that0;
                 return (this.packed() == card.packed());
             }

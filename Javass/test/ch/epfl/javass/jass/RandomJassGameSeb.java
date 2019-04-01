@@ -22,11 +22,11 @@ public final class RandomJassGameSeb {
                 Player player = new RandomPlayer(2019);
                 playerNames.put(pId, pId.name());
                 if(pId == PlayerId.PLAYER_1) {
-                    player = new MctsPlayer(pId, 0, 100);
+                    player = new MctsPlayer(pId, 300, 100);
                     player = new SilentPlayer(player);
                     playerNames.put(pId, pId.name() + " (me)");
                 } else if(pId == PlayerId.PLAYER_3) {
-                    player = new MctsPlayer(pId, 2019, 100);
+                    player = new MctsPlayer(pId, 300, 100);
                 }
                 players.put(pId, player);
             }

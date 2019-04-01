@@ -161,12 +161,15 @@ public final class TurnState {
         if(!trick().isFull()) {
             throw new IllegalStateException();
         }
+        
         PlayerId winningPlayer = trick().winningPlayer();
         Score newScore = score().withAdditionalTrick(winningPlayer.team(), trick().points());
         Trick nextTrick;
         if(trick().isLast()) {
+        	
             nextTrick = Trick.firstEmpty(trick().trump(), trick().winningPlayer());
         }
+        
         else {
             nextTrick = trick().nextEmpty();
         }

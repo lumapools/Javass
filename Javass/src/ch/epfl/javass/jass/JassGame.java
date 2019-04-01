@@ -63,25 +63,30 @@ public final class JassGame {
                 }
             }
             return false;
+
         }
         return false;
     }
     
     /**
-     * Cette méthode fait avancer l'état du jeu jusqu'à la fin du prochain pli, ou ne fait rien si la partie est terminée
+     * Fait avancer l'état du jeu jusqu'à la fin du prochain pli, ou ne fait rien si la partie est terminée
      */
     public void advanceToEndOfNextTrick() {
+    	
         if(isGameOver()) {
-            return;
+            return; 
         }
+        
         if(turnState == null) {
             startNewGame();
-        }else {
+        }
+        else {
             turnState = turnState.withTrickCollected();
             
         }
         if(isGameOver()) {
-        } else {
+        } 
+        else {
             if(turnState.isTerminal()) {
                 startNewTurn();
             }
@@ -91,7 +96,6 @@ public final class JassGame {
         }
     }
     
-    
     private void shuffleDeckAndDistribute(){
         List<Card> deck = new ArrayList<>();
         for(Color c : Color.ALL) {
@@ -100,6 +104,7 @@ public final class JassGame {
             }
         }
         Collections.shuffle(deck, shuffleRng);
+        
         playerCardSet.put(PlayerId.PLAYER_1, CardSet.of(deck.subList(0, 9)));
         playerCardSet.put(PlayerId.PLAYER_2, CardSet.of(deck.subList(9, 18)));
         playerCardSet.put(PlayerId.PLAYER_3, CardSet.of(deck.subList(18, 27)));

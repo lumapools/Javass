@@ -188,7 +188,6 @@ public final class Card {
         public String toString() {
             return image;
         }
-        
     }
     
     /**

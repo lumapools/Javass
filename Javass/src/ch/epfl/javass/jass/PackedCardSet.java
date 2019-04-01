@@ -51,7 +51,8 @@ public final class PackedCardSet {
     /**
      * Constante qui représente un ensemble de cartes dans lequel tout les cartes y sont
      */
-    public static final long ALL_CARDS = Jass.ALL_CARDS;
+    public static final long ALL_CARDS = 0b111111111_0000000111111111_0000000111111111_0000000111111111L;
+;
 
     
     /**

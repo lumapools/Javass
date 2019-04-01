@@ -12,7 +12,6 @@ import ch.epfl.javass.jass.Card.Rank;
  */
 public interface Jass {
 
-    long ALL_CARDS = 0b111111111_0000000111111111_0000000111111111_0000000111111111L;
     Card STARTING_CARD = Card.of(Color.DIAMOND, Rank.SEVEN);
     
     int HAND_SIZE = 9;

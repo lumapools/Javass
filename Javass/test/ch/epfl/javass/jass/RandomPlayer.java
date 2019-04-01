@@ -12,7 +12,6 @@ public final class RandomPlayer implements Player {
     @Override
     public Card cardToPlay(TurnState state, CardSet hand) {
       CardSet playable = state.trick().playableCards(hand);
-      //System.out.println(playable);
       return playable.get(rng.nextInt(playable.size()));
     }
   }
