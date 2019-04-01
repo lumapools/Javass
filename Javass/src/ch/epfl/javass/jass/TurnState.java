@@ -59,7 +59,6 @@ public final class TurnState {
     public static TurnState ofPackedComponents(long pkScore, long pkUnplayedCards, int pkTrick) {
         Preconditions.checkArgument(PackedScore.isValid(pkScore) && PackedCardSet.isValid(pkUnplayedCards) && PackedTrick.isValid(pkTrick));
         return new TurnState(pkScore, pkUnplayedCards, pkTrick);
-        
     }
     
     /**
@@ -110,14 +109,12 @@ public final class TurnState {
         return Trick.ofPacked(currentTrick);
     }
     
-    
-    
     /**
      * Retourne vrai ssi l'état est terminal, c-à-d si le dernier pli du tour a été joué
      * @return (boolean) vrai ssi terminal
      */
     public boolean isTerminal() {
-        return (score().turnTricks(TeamId.TEAM_1) + score().turnTricks(TeamId.TEAM_2) == Jass.TRICKS_PER_TURN);
+        return currentTrick == PackedTrick.INVALID;
     }
     
     /**
@@ -156,24 +153,11 @@ public final class TurnState {
      * @return (TurnState) l'état correspondant
      * @throws IllegalStateException si le pli n'est pas plein
      */
-    
-    public TurnState withTrickCollected() throws IllegalStateException {
-        if(!trick().isFull()) {
+    public TurnState withTrickCollected() throws IllegalStateException{
+        if(!PackedTrick.isFull(currentTrick)) {
             throw new IllegalStateException();
         }
-        
-        PlayerId winningPlayer = trick().winningPlayer();
-        Score newScore = score().withAdditionalTrick(winningPlayer.team(), trick().points());
-        Trick nextTrick;
-        if(trick().isLast()) {
-        	
-            nextTrick = Trick.firstEmpty(trick().trump(), trick().winningPlayer());
-        }
-        
-        else {
-            nextTrick = trick().nextEmpty();
-        }
-        return TurnState.ofPackedComponents(newScore.packed(), unplayedCards().packed(), nextTrick.packed());
+        return new TurnState(PackedScore.withAdditionalTrick(currentScore, PackedTrick.winningPlayer(currentTrick).team(), PackedTrick.points(currentTrick)), unplayedCards, PackedTrick.nextEmpty(currentTrick));
     }
     
     /**
@@ -184,7 +168,7 @@ public final class TurnState {
      * @return (TurnState) l'état correspondant
      * @throws IllegalStateException si le pli courant avant d'ajouter la carte est plein
      */
-    public TurnState withNewCardPlayedAndTrickCollected(Card card) throws IllegalStateException {
+    public TurnState withNewCardPlayedAndTrickCollected(Card card) throws IllegalStateException{
         assert(PackedCard.isValid(card.packed()));
         if(PackedTrick.isFull(currentTrick)) {
             throw new IllegalStateException();
@@ -195,12 +179,5 @@ public final class TurnState {
         }
         return updateState;
     }
-    
-    @Override
-    public String toString() {
-    	return String.format("%s %s %s", score(), trick(), unplayedCards());
-    }
-    
-    
     
 }
