@@ -19,7 +19,7 @@ public final class MctsPlayer implements Player {
 	private final int iterations;
 	private final SplittableRandom rng;
 
-	/**
+	/*
 	 * Construit un joueur simulé
 	 * 
 	 * @param ownId      (PlayerId) l'identité
@@ -35,7 +35,7 @@ public final class MctsPlayer implements Player {
 		this.iterations = iterations;
 	}
 
-	/**
+	/*
 	 * Simule une partie entière à partir d'un turnState
 	 * 
 	 * @param turnState (TurnState) l'état du tout en cours
@@ -59,7 +59,7 @@ public final class MctsPlayer implements Player {
 		return turnState.score();
 	}
 
-	/**
+	/*
 	 * Ajoute un noeud au noeud parent pour l'enfant qui a la valeur V(n) la plus
 	 * élevée
 	 * 
@@ -87,7 +87,7 @@ public final class MctsPlayer implements Player {
 		}
 	}
 
-	/**
+	/*
 	 * Reparcourt tout l'arbre et met à jour tous les scores de tous les noeuds
 	 * 
 	 * @param path (List<Node>) le chemin à parcourir
@@ -96,7 +96,7 @@ public final class MctsPlayer implements Player {
 	private void computeAndUpdateScores(List<Node> path, CardSet hand) {
 		if (!path.isEmpty()) {
 			Node firstNode = path.get(0);
-			Score firstScore = this.randomSimulate(path.get(0).turnState, hand);
+			this.randomSimulate(path.get(0).turnState, hand);
 			Node lastNode = path.get(path.size() - 1);
 			Score lastScore = this.randomSimulate(lastNode.turnState, lastNode.hand);
 			TeamId teamId = ownId.team();
@@ -128,12 +128,6 @@ public final class MctsPlayer implements Player {
 		return root.children[root.bestBranchFollowChild(Node.C_FOR_WIN)].lastPlayedCard;
 	}
 
-	/**
-	 * Classe Node imbriquée, gère les noeuds et leur construction
-	 * 
-	 * @author Benedek Hauer (301364)
-	 * @author Emi Sakamoto (302290)
-	 */
 	private static class Node {
 
 		private TurnState turnState;
@@ -147,14 +141,7 @@ public final class MctsPlayer implements Player {
 		private final static int C_FOR_WIN = 0;
 		private final static int C_FOR_GROW = 40;
 
-		/**
-		 * Constructeur
-		 * 
-		 * @param turnState      (TurnState) l'état du tour
-		 * @param hand           (CardSet) la main avec laquelle simuler les parties
-		 * @param lastPlayedCard (Card) la dernière carte qui a été jouée
-		 * @param playerId       (PlayerId) l'identifiant du joueur
-		 */
+		
 		private Node(TurnState turnState, CardSet hand, Card lastPlayedCard, PlayerId playerId) {
 			this.turnState = turnState;
 			this.hand = hand;
@@ -168,7 +155,7 @@ public final class MctsPlayer implements Player {
 			}
 		}
 
-		/**
+		/*
 		 * Ensemble des cartes pas encore jouées dans le tour
 		 * 
 		 * @return (CardSet) l'ensemble des cartes pas encore jouées durant la partie
@@ -178,7 +165,7 @@ public final class MctsPlayer implements Player {
 					: turnState.unplayedCards().difference(hand);
 		}
 
-		/**
+		/*
 		 * Retourne l'index du meilleur enfant, pour continuer à construire l'arbre
 		 * 
 		 * @param c (int) (constante pour calculer la meilleure branche avec laquelle
@@ -195,7 +182,7 @@ public final class MctsPlayer implements Player {
 			return max;
 		}
 
-		/**
+		/*
 		 * Calcule V(n) du noeud
 		 * 
 		 * @param c      (int) constante utilisée pour calculer v
@@ -208,7 +195,7 @@ public final class MctsPlayer implements Player {
 							+ c * Math.sqrt(2 * Math.log(parent.numSimulations) / (numSimulations));
 		}
 
-		/**
+		/*
 		 * Remplit le tableau des enfants d'un noeud
 		 * 
 		 * @param card (Card) la carte jouée
@@ -231,7 +218,7 @@ public final class MctsPlayer implements Player {
 			throw new IllegalStateException("Cannot add new child: Children Full");
 		}
 
-		/**
+		/*
 		 * Check si la liste des cartes injouées est vide
 		 * 
 		 * @return (boolean) vrai si pas toutes les cartes ont été jouées, faux sinon

@@ -28,8 +28,6 @@ public final class Score {
 	 * valide
 	 * 
 	 * @param packed (long) version empaquetée de la carte
-	 * @throws IllegalArgumentException si packed ne représente pas un score
-	 *                                  empaqueté valide
 	 * @return (Score) le score
 	 */
 	public static Score ofPacked(long packed) {
@@ -97,9 +95,7 @@ public final class Score {
 	 * inférieur à 0
 	 * 
 	 * @param winningTeam (TeamId) l'équipe qui a gagné la pli
-	 * @param trickPoints (int) le nombre de points de la pli
-	 * @throws IllegalArgumentException si le nombre de points donné est inférieur à
-	 *                                  0
+	 * @param trickPoints (int) le nombre de points de la pli                                 0
 	 * @return (Score) score mis à jour
 	 */
 	public Score withAdditionalTrick(TeamId winningTeam, int trickPoints) {

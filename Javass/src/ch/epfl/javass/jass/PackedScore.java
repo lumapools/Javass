@@ -20,8 +20,8 @@ public final class PackedScore {
 	 * Constantes de score
 	 */
 	private static final long MAX_TRICKS_PER_TURN = 9L;
-	private static final long MAX_TURN_POINTS = 257;
-	private static final long MAX_GAME_POINTS = 2000;
+	private static final long MAX_TURN_POINTS = 257L;
+	private static final long MAX_GAME_POINTS = 2000L;
 	private static final int INITIAL_NB_TRICKS = 0;
 	private static final int INITIAL_TURN_POINTS = 0;
 
@@ -74,6 +74,7 @@ public final class PackedScore {
 	}
 
 	/**
+	 * Empaquète les 6 composantes en un score
 	 * 
 	 * @param turnTricks1 (int) nb de plis remportés par l'équipe 1
 	 * @param turnPoints1 (int) nb de points remportée par l'équipe 1 dans le tour

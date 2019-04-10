@@ -11,7 +11,6 @@ import ch.epfl.javass.Preconditions;
  */
 public final class Bits64 {
 
-
 	private Bits64() {
 	}
 
@@ -41,8 +40,7 @@ public final class Bits64 {
 	 * @return (long) le nombre final qui a été extrait de bits
 	 */
 	public static long extract(long bits, int start, int size) {
-		Preconditions.checkArgument(
-				start >= 0 && start <= Long.SIZE && start + size <= Long.SIZE && size >= 0);
+		Preconditions.checkArgument(start >= 0 && start <= Long.SIZE && start + size <= Long.SIZE && size >= 0);
 		return bits << (Long.SIZE - (start + size)) >>> Long.SIZE - size;
 	}
 
@@ -61,8 +59,8 @@ public final class Bits64 {
 	 * @return (long) les bits mis bout à bout par la méthode
 	 */
 	public static long pack(long v1, int s1, long v2, int s2) throws IllegalArgumentException {
-		Preconditions.checkArgument(s1 >= 0 && s2 >= 0 && s1 + s2 <= Long.SIZE && packVerify(v1, s1)
-				&& packVerify(v2, s2));
+		Preconditions
+				.checkArgument(s1 >= 0 && s2 >= 0 && s1 + s2 <= Long.SIZE && packVerify(v1, s1) && packVerify(v2, s2));
 		return v1 | (v2 << s1);
 	}
 

@@ -135,8 +135,6 @@ public final class Trick {
 	 * 
 	 * @param index (int) l'index qu'on aimerait regarder
 	 * @return (PlayerId) le joueur à la position index
-	 * @throws IndexOutOfBoundsException si l'index n'est pas compris entre 0
-	 *                                   (inclus) et 4 (exclus)
 	 */
 	public PlayerId player(int index) {
 		Preconditions.checkIndex(index, NB_PLAYERS);
@@ -148,9 +146,6 @@ public final class Trick {
 	 * 
 	 * @param index (int) l'index auquel de la carte voulue
 	 * @return (Card) la carte qui se trouve à l'index voulu
-	 * @throws IndexOutOfBoundsException si l'index est soit plus petit que 0, soit
-	 *                                   si l'index est plus grand que la taille du
-	 *                                   pli
 	 */
 	public Card card(int index) {
 		Preconditions.checkIndex(index, size());
