@@ -1,22 +1,32 @@
 package ch.epfl.javass.jass;
 
-import ch.epfl.javass.jass.Card.Color;
-import ch.epfl.javass.jass.Card.Rank;
-
 /**
- * Contient un certain nombre de constantes entières de type int, 
- * liées au jeu de Jass
+ * Contient un certain nombre de constantes entières de type int, liées au jeu
+ * de Jass
+ * 
  * @author Benedek Hauer (301364)
  * @author Emi Sakamoto (302290)
  *
  */
 public interface Jass {
-
-    Card STARTING_CARD = Card.of(Color.DIAMOND, Rank.SEVEN);
-    
-    int HAND_SIZE = 9;
-    int TRICKS_PER_TURN = 9;
-    int WINNING_POINTS = 1000;
-    int MATCH_ADDITIONAL_POINTS = 100;
-    int LAST_TRICK_ADDITIONAL_POINTS = 5;
+	/**
+	 * Le nombre de cartes dans la main au début
+	 */
+	int HAND_SIZE = 9;
+	/**
+	 * Le nombre de plis par tour
+	 */
+	int TRICKS_PER_TURN = 9;
+	/**
+	 * Le nombre de points nécessaire pour gagner
+	 */
+	int WINNING_POINTS = 1000;
+	/**
+	 * Les points additionnels lors d'un match
+	 */
+	int MATCH_ADDITIONAL_POINTS = 100;
+	/**
+	 * Les points additionnels du dernier pli
+	 */
+	int LAST_TRICK_ADDITIONAL_POINTS = 5;
 }
