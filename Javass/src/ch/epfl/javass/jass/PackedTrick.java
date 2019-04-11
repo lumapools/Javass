@@ -225,7 +225,8 @@ public final class PackedTrick {
 	 */
 	public static int withAddedCard(int pkTrick, int pkCard) {
 		assert isValid(pkTrick);
-		assert (PackedCard.isValid(pkCard));
+		assert !isFull(pkTrick);
+		assert PackedCard.isValid(pkCard);
 		int shiftBeforeCard = NB_BITS_FOR_CARD * size(pkTrick);
 		int shiftAfterCard = NB_BITS_FOR_CARD * (size(pkTrick) + 1);
 		return (pkCard << shiftBeforeCard | Bits32.mask(0, shiftBeforeCard)
@@ -335,6 +336,7 @@ public final class PackedTrick {
 	 */
 	public static PlayerId winningPlayer(int pkTrick) {
 		assert isValid(pkTrick);
+		assert !isEmpty(pkTrick);
 		int wP = 0;
 		for (int i = 0; i < size(pkTrick); i++) {
 			if (PackedCard.isBetter(trump(pkTrick), card(pkTrick, i), card(pkTrick, wP))
