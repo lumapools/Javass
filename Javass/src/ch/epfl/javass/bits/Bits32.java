@@ -41,8 +41,7 @@ public final class Bits32 {
 	 * @return (int) le nombre final qui a été extrait de bits
 	 */
 	public static int extract(int bits, int start, int size) {
-		Preconditions.checkArgument(
-				(start >= 0 && start <= Integer.SIZE && start + size <= Integer.SIZE && size >= 0));
+		Preconditions.checkArgument((start >= 0 && start <= Integer.SIZE && start + size <= Integer.SIZE && size >= 0));
 		return bits << (Integer.SIZE - start - size) >>> Integer.SIZE - size;
 
 	}
@@ -62,8 +61,8 @@ public final class Bits32 {
 	 * @return (int) les bits mis bout à bout par la fonction
 	 */
 	public static int pack(int v1, int s1, int v2, int s2) throws IllegalArgumentException {
-		Preconditions.checkArgument(s1 >= 0 && s2 >= 0 && s1 + s2 <= Integer.SIZE
-				&& packVerify(v1, s1) && packVerify(v2, s2));
+		Preconditions.checkArgument(
+				s1 >= 0 && s2 >= 0 && s1 + s2 <= Integer.SIZE && packVerify(v1, s1) && packVerify(v2, s2));
 		return (v1 | (v2 << s1));
 
 	}
@@ -87,8 +86,8 @@ public final class Bits32 {
 	 *                                  plus de place (bits) que voulu en argument
 	 */
 	public static int pack(int v1, int s1, int v2, int s2, int v3, int s3) throws IllegalArgumentException {
-		Preconditions.checkArgument(s1 >= 0 && s2 >= 0 && s3 >= 0
-				&& s1 + s2 + s3 <= Integer.SIZE && packVerify(v1, s1) && packVerify(v2, s2) && packVerify(v3, s3));
+		Preconditions.checkArgument(s1 >= 0 && s2 >= 0 && s3 >= 0 && s1 + s2 + s3 <= Integer.SIZE && packVerify(v1, s1)
+				&& packVerify(v2, s2) && packVerify(v3, s3));
 		return (v1 | (v2 << s1) | (v3 << s2 + s1));
 
 	}
@@ -122,16 +121,14 @@ public final class Bits32 {
 	 */
 	public static int pack(int v1, int s1, int v2, int s2, int v3, int s3, int v4, int s4, int v5, int s5, int v6,
 			int s6, int v7, int s7) throws IllegalArgumentException {
-		Preconditions.checkArgument(
-				(s1 >= 0 && s2 >= 0 && s3 >= 0 && s4 >= 0 && s5 >= 0
-						&& s6 >= 0 && s7 >= 0 && s1 + s2 + s3 + s4 + s5 + s6 + s7 <= Integer.SIZE
-						&& packVerify(v1, s1) && packVerify(v2, s2) && packVerify(v3, s3) && packVerify(v4, s4)
-						&& packVerify(v5, s5) && packVerify(v6, s6) && packVerify(v7, s7)));
-		Preconditions.checkArgument(
-				(s1 >= 0 && s2 >= 0 && s3 >= 0 && s4 >= 0 && s5 >= 0
-						&& s6 >= 0 && s7 >= 0 && s1 + s2 + s3 + s4 + s5 + s6 + s7 <= Integer.SIZE
-						&& packVerify(v1, s1) && packVerify(v2, s2) && packVerify(v3, s3) && packVerify(v4, s4)
-						&& packVerify(v5, s5) && packVerify(v6, s6) && packVerify(v7, s7)));
+		Preconditions.checkArgument((s1 >= 0 && s2 >= 0 && s3 >= 0 && s4 >= 0 && s5 >= 0 && s6 >= 0 && s7 >= 0
+				&& s1 + s2 + s3 + s4 + s5 + s6 + s7 <= Integer.SIZE && packVerify(v1, s1) && packVerify(v2, s2)
+				&& packVerify(v3, s3) && packVerify(v4, s4) && packVerify(v5, s5) && packVerify(v6, s6)
+				&& packVerify(v7, s7)));
+		Preconditions.checkArgument((s1 >= 0 && s2 >= 0 && s3 >= 0 && s4 >= 0 && s5 >= 0 && s6 >= 0 && s7 >= 0
+				&& s1 + s2 + s3 + s4 + s5 + s6 + s7 <= Integer.SIZE && packVerify(v1, s1) && packVerify(v2, s2)
+				&& packVerify(v3, s3) && packVerify(v4, s4) && packVerify(v5, s5) && packVerify(v6, s6)
+				&& packVerify(v7, s7)));
 		return v1 | (v2 << s1) | (v3 << s2 + s1) | (v4 << s3 + s2 + s1) | (v5 << s4 + s3 + s2 + s1)
 				| (v6 << s5 + s4 + s3 + s2 + s1) | (v7 << s6 + s5 + s4 + s3 + s2 + s1);
 	}

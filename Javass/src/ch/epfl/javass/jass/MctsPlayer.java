@@ -22,11 +22,14 @@ public final class MctsPlayer implements Player {
 	/*
 	 * Construit un joueur simulé
 	 * 
-	 * @param ownId      (PlayerId) l'identité
-	 * @param rngSeed    (long) la graine aléatoire
+	 * @param ownId (PlayerId) l'identité
+	 * 
+	 * @param rngSeed (long) la graine aléatoire
+	 * 
 	 * @param iterations (int) le nombre d'itérations
+	 * 
 	 * @throw IllegalArgumentException lorsque le nombre d'itérations est inférieur
-	 *        à 9
+	 * à 9
 	 */
 	public MctsPlayer(PlayerId ownId, long rngSeed, int iterations) throws IllegalArgumentException {
 		Preconditions.checkArgument(iterations >= Jass.HAND_SIZE);
@@ -39,7 +42,9 @@ public final class MctsPlayer implements Player {
 	 * Simule une partie entière à partir d'un turnState
 	 * 
 	 * @param turnState (TurnState) l'état du tout en cours
-	 * @param myHand    (CardSet) la main du joueur
+	 * 
+	 * @param myHand (CardSet) la main du joueur
+	 * 
 	 * @return (Score) le score final obtenu de turnState
 	 */
 	private Score randomSimulate(TurnState turnState, CardSet myHand) {
@@ -64,8 +69,9 @@ public final class MctsPlayer implements Player {
 	 * élevée
 	 * 
 	 * @param root (Node) la racine du noeud
+	 * 
 	 * @return (List<Node>) Le chemin qui mène au noeud créé, ou une liste vide si
-	 *         on ne peut pas continuer sur l'arbre
+	 * on ne peut pas continuer sur l'arbre
 	 */
 	private List<Node> growTreeByOneNode(Node root) {
 		List<Node> path = new ArrayList<Node>();
@@ -91,6 +97,7 @@ public final class MctsPlayer implements Player {
 	 * Reparcourt tout l'arbre et met à jour tous les scores de tous les noeuds
 	 * 
 	 * @param path (List<Node>) le chemin à parcourir
+	 * 
 	 * @param hand (CardSet) la main du joueur
 	 */
 	private void computeAndUpdateScores(List<Node> path, CardSet hand) {
@@ -141,7 +148,6 @@ public final class MctsPlayer implements Player {
 		private final static int C_FOR_WIN = 0;
 		private final static int C_FOR_GROW = 40;
 
-		
 		private Node(TurnState turnState, CardSet hand, Card lastPlayedCard, PlayerId playerId) {
 			this.turnState = turnState;
 			this.hand = hand;
@@ -169,7 +175,8 @@ public final class MctsPlayer implements Player {
 		 * Retourne l'index du meilleur enfant, pour continuer à construire l'arbre
 		 * 
 		 * @param c (int) (constante pour calculer la meilleure branche avec laquelle
-		 *          continuer
+		 * continuer
+		 * 
 		 * @return (int) l'index du meilleur enfant
 		 */
 		private int bestBranchFollowChild(int c) {
@@ -185,8 +192,10 @@ public final class MctsPlayer implements Player {
 		/*
 		 * Calcule V(n) du noeud
 		 * 
-		 * @param c      (int) constante utilisée pour calculer v
+		 * @param c (int) constante utilisée pour calculer v
+		 * 
 		 * @param parent (Node) le noeud parent de ce noeud
+		 * 
 		 * @return (double) la valeur de V(n)
 		 */
 		private double computeV(int c, Node parent) {
@@ -199,8 +208,9 @@ public final class MctsPlayer implements Player {
 		 * Remplit le tableau des enfants d'un noeud
 		 * 
 		 * @param card (Card) la carte jouée
+		 * 
 		 * @return (Node) le nouveau noeud crée à partir de cette insertion des enfants
-		 *         dans le tableau
+		 * dans le tableau
 		 */
 		private Node addChild(Card card) {
 			for (int i = 0; i < children.length; i++) {

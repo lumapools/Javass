@@ -3,7 +3,7 @@ package ch.epfl.javass.bits;
 import ch.epfl.javass.Preconditions;
 
 /**
- * Séquence de 64 bits qui va représenter le score
+ * Séquence de 64 bits
  * 
  * @author Benedek Hauer (301364)
  * @author Emi Sakamoto (302290)

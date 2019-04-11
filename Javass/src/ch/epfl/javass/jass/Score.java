@@ -95,7 +95,7 @@ public final class Score {
 	 * inférieur à 0
 	 * 
 	 * @param winningTeam (TeamId) l'équipe qui a gagné la pli
-	 * @param trickPoints (int) le nombre de points de la pli                                 0
+	 * @param trickPoints (int) le nombre de points de la pli 0
 	 * @return (Score) score mis à jour
 	 */
 	public Score withAdditionalTrick(TeamId winningTeam, int trickPoints) {
