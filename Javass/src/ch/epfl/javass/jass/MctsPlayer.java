@@ -100,27 +100,48 @@ public final class MctsPlayer implements Player {
 	 * 
 	 * @param hand (CardSet) la main du joueur
 	 */
+	
+	
 	private void computeAndUpdateScores(List<Node> path, CardSet hand) {
 		if (!path.isEmpty()) {
 			Node firstNode = path.get(0);
-			this.randomSimulate(path.get(0).turnState, hand);
-			Node lastNode = path.get(path.size() - 1);
-			Score lastScore = this.randomSimulate(lastNode.turnState, lastNode.hand);
+			Score firstScore  = randomSimulate(firstNode.turnState, firstNode.hand);
+			Node lastNode = path.get(path.size()-1);
+			Score lastScore = randomSimulate(lastNode.turnState, lastNode.hand);
 			TeamId teamId = ownId.team();
 			for (Node n : path) {
-				if (!n.equals(firstNode)) {
-					n.totalScorePerNode += (teamId == TeamId.TEAM_1) ? lastScore.totalPoints(TeamId.TEAM_1)
-							: lastScore.totalPoints(TeamId.TEAM_2);
-					teamId = (n.turnState.isTerminal()) ? TeamId.TEAM_1 : n.turnState.nextPlayer().team();
-				} else {
-					n.totalScorePerNode += (teamId == TeamId.TEAM_1) ? lastScore.totalPoints(TeamId.TEAM_1)
-							: lastScore.totalPoints(TeamId.TEAM_2);
-					teamId = (n.turnState.isTerminal()) ? TeamId.TEAM_1 : n.turnState.nextPlayer().team();
-				}
 				n.numSimulations += 1;
+				if (!n.equals(firstNode)) {
+					n.totalScorePerNode += lastScore.totalPoints(teamId);
+					teamId = (n.turnState.isTerminal()) ? teamId : teamId.other();
+				} 
+				
+				
 			}
 		}
 	}
+	
+	
+	/*
+	private void computeAndUpdateScores(List<Node> path, CardSet hand) {
+		if (!path.isEmpty()) {
+			Node lastNode = path.get(path.size() - 1);
+			Score lastScore = this.randomSimulate(lastNode.turnState, lastNode.hand);
+			TeamId teamId = ownId.team();
+			for (int i = 1; i < path.size()-1; i++) {
+				if(path.get(i-1).turnState.nextPlayer().team().equals(teamId)) {
+					path.get(i).totalScorePerNode += lastScore.totalPoints(teamId);
+				}
+				else {
+					path.get(i).totalScorePerNode += lastScore.totalPoints(teamId.other());
+				}
+				path.get(i).numSimulations += 1;
+			}
+		}
+	}
+	*/
+	
+	
 
 	@Override
 	public Card cardToPlay(TurnState state, CardSet hand) {
@@ -132,6 +153,10 @@ public final class MctsPlayer implements Player {
 				computeAndUpdateScores(path, hand);
 			}
 		}
+		for(int i = 0; i<root.children.length; ++i) {
+            System.out.println(state.trick().playableCards(hand).get(i).toString() + " " + (double)root.children[i].totalScorePerNode/root.children[i].numSimulations
+                     + " " + root.children[i].numSimulations);
+        }
 		return root.children[root.bestBranchFollowChild(Node.C_FOR_WIN)].lastPlayedCard;
 	}
 

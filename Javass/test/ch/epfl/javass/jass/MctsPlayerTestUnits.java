@@ -369,6 +369,24 @@ public class MctsPlayerTestUnits {
             assertEquals(Card.of(Color.HEART, Rank.SIX), c);
         });
     }
+    
+    @Test
+    void works() {
+        CardSet hand = CardSet.EMPTY
+                .add(Card.of(Color.SPADE, Rank.EIGHT))
+                .add(Card.of(Color.SPADE, Rank.NINE))
+                .add(Card.of(Color.SPADE, Rank.TEN))
+                .add(Card.of(Color.HEART, Rank.SIX))
+                .add(Card.of(Color.HEART, Rank.SEVEN))
+                .add(Card.of(Color.HEART, Rank.EIGHT))
+                .add(Card.of(Color.HEART, Rank.NINE))
+                .add(Card.of(Color.HEART, Rank.TEN))
+                .add(Card.of(Color.HEART, Rank.JACK));
+        TurnState turnState = TurnState.initial(Color.SPADE, Score.INITIAL, PlayerId.PLAYER_1);
+        turnState = turnState.withNewCardPlayed(Card.of(Color.SPADE, Rank.JACK));
+        MctsPlayer p = new MctsPlayer(PlayerId.PLAYER_2, SEED, 100000);
+        System.out.println(p.cardToPlay(turnState, hand).toString());
+    }
 
     @Test
     void mctsPlayerPlaysCorrectly15() {
@@ -400,4 +418,6 @@ public class MctsPlayerTestUnits {
             s = s.withNewCardPlayedAndTrickCollected(cards.get(i));
         return s;
     }
+    
+    
 }

@@ -3,7 +3,7 @@ package ch.epfl.javass.bits;
 import ch.epfl.javass.Preconditions;
 
 /**
- * Une séquence de 32 bits
+ * Classe permettant de manipuler une séquence de 32 bits
  * 
  * @author Benedek Hauer (301364)
  * @author Emi Sakamoto (302290)
@@ -47,18 +47,13 @@ public final class Bits32 {
 	}
 
 	/**
-	 * Construit une séquence de 32 bits en mettant bout à bout les bits donnés en
+	 * Construit une séquence de 32 bits en mettant bout à bout les int (v) donnés en
 	 * arguments
 	 * 
 	 * @param v1 (int) premier nombre dans dans la séquence de 32 bits
 	 * @param s1 (int) la longueur voulue qui sera occupée par v1
 	 * @param v2 (int) vient après v1 dans la séquence de 32 bits
 	 * @param s2 (int) longueur voulue qui sera occupée par v2
-	 * @throws IllegalArgumentException si 1) Si la somme s1+s2 dépasse 32 2) Si on
-	 *                                  donne une longueur négative pour s1 ou s2 3)
-	 *                                  Si l'int donné en paramètre occupe plus de
-	 *                                  place (bits) que voulu en argument
-	 * @return (int) les bits mis bout à bout par la fonction
 	 */
 	public static int pack(int v1, int s1, int v2, int s2) throws IllegalArgumentException {
 		Preconditions.checkArgument(
@@ -68,8 +63,8 @@ public final class Bits32 {
 	}
 
 	/**
-	 * Construit une séquence de 32 bits en mettant bout à bout les bits donnés en
-	 * arguments On va dans le sens des bits de poids faible aux bits de poids fort
+	 * Construit une séquence de 32 bits en mettant bout à bout les int (v) donnés en
+	 * arguments. On va dans le sens des bits de poids faible aux bits de poids fort
 	 * lors de l'assemblage
 	 * 
 	 * @param v1 (int) vient en premier dans la séquence de 32 bits
@@ -79,13 +74,8 @@ public final class Bits32 {
 	 * @param v3 (int) vient en troisième dans la séquence de 32 bits
 	 * @param s3 (int) longueur voulue de v3
 	 * @return (int) la séquence de 32 bits construite
-	 * @throws IllegalArgumentException
-	 * @throws IllegalArgumentException si 1) Si la somme s1+s2+s3 dépasse 32 2) Si
-	 *                                  on donne une longueur négative pour s1, s2
-	 *                                  ou s3 3) Si l'int donné en paramètre occupe
-	 *                                  plus de place (bits) que voulu en argument
 	 */
-	public static int pack(int v1, int s1, int v2, int s2, int v3, int s3) throws IllegalArgumentException {
+	public static int pack(int v1, int s1, int v2, int s2, int v3, int s3) {
 		Preconditions.checkArgument(s1 >= 0 && s2 >= 0 && s3 >= 0 && s1 + s2 + s3 <= Integer.SIZE && packVerify(v1, s1)
 				&& packVerify(v2, s2) && packVerify(v3, s3));
 		return (v1 | (v2 << s1) | (v3 << s2 + s1));
@@ -93,7 +83,7 @@ public final class Bits32 {
 	}
 
 	/**
-	 * Construit une séquence de 32 bits en mettant bout à bout les bits v1 à v7. On
+	 * Construit une séquence de 32 bits en mettant bout à bout les int v1 à v7. On
 	 * va dans le sens des bits de poids faible aux bits de poids fort lors de
 	 * l'assemblage
 	 * 
@@ -112,15 +102,10 @@ public final class Bits32 {
 	 * @param v7 (int) vient en septième dans la séquence de 32 bits
 	 * @param s7 (int) longueur voulue de v7
 	 * @return (int) la séquence de 32 bits construite
-	 * @throws IllegalArgumentException 1) Si la somme s1+s2+s3+s4+s5+s6+s7 dépasse
-	 *                                  32 2) Si on donne une longueur négative pour
-	 *                                  s1, s2, s3, s4, s5, s6 ou s7 3) Si l'int
-	 *                                  donné en paramètre occupe plus de place
-	 *                                  (bits) que voulu en argument
 	 * 
 	 */
 	public static int pack(int v1, int s1, int v2, int s2, int v3, int s3, int v4, int s4, int v5, int s5, int v6,
-			int s6, int v7, int s7) throws IllegalArgumentException {
+			int s6, int v7, int s7) {
 		Preconditions.checkArgument((s1 >= 0 && s2 >= 0 && s3 >= 0 && s4 >= 0 && s5 >= 0 && s6 >= 0 && s7 >= 0
 				&& s1 + s2 + s3 + s4 + s5 + s6 + s7 <= Integer.SIZE && packVerify(v1, s1) && packVerify(v2, s2)
 				&& packVerify(v3, s3) && packVerify(v4, s4) && packVerify(v5, s5) && packVerify(v6, s6)
