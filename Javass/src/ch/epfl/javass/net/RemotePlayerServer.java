@@ -79,7 +79,7 @@ public final class RemotePlayerServer {
             String[] names = StringSerializer.split(',', ls[2]);
             Map<PlayerId, String> playerNames = new HashMap<>();
             for (int i = 0; i < 3; i++) {
-                playerNames.put(PlayerId.ALL.get((ownId + i) % 4),
+                playerNames.put(PlayerId.ALL.get(i),
                         StringSerializer.deserializeString(names[i]));
             }
             player.setPlayers(PlayerId.ALL.get(ownId), playerNames);
@@ -113,10 +113,7 @@ public final class RemotePlayerServer {
                     Score.ofPacked(StringSerializer.deserializeLong(ls[1])));
             break;
         case WINR:
-            if (StringSerializer.deserializeInt(ls[1]) == 0) {
-                player.setWinningTeam(TeamId.TEAM_1);
-            }
-            player.setWinningTeam(TeamId.TEAM_2);
+            player.setWinningTeam(TeamId.ALL.get(StringSerializer.deserializeInt(ls[1])));
             break;
         }
     }

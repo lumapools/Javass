@@ -28,7 +28,7 @@ public class NetJassGame {
                 player = new RandomPlayer(2019);
                 if(pId == PlayerId.PLAYER_2) {
                     try {
-                        player = new RemotePlayerClient("2a02:1205:c698:6da0:6078:471a:b73a:cae9", RemotePlayerClient.PORT_NUMBER);
+                        player = new RemotePlayerClient("localhost", RemotePlayerClient.PORT_NUMBER);
                         player = new PrintingPlayer(player);
                                           
                     } catch (IOException e) {

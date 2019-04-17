@@ -44,10 +44,13 @@ public class RemotePlayerClient implements Player, AutoCloseable {
 		send(toSend);
 		
 		while(true) {
+			String msgFromServer;
 			try {
-				String msgFromServer = r.readLine();
+				msgFromServer = r.readLine();
 				return Card.ofPacked(Integer.parseInt(msgFromServer));
-			} catch (Exception e) {
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
