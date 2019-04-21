@@ -43,16 +43,15 @@ public class RemotePlayerClient implements Player, AutoCloseable {
 		String toSend = StringSerializer.combine(' ', JassCommand.CARD.name(), combinedState, serializedHand);
 		send(toSend);
 		
-		while(true) {
-			String msgFromServer;
-			try {
-				msgFromServer = r.readLine();
-				return Card.ofPacked(Integer.parseInt(msgFromServer));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		String msgFromServer = null;
+		try {
+			msgFromServer = r.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return Card.ofPacked(StringSerializer.deserializeInt(msgFromServer));
+		
+		
 
 	}
 

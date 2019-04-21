@@ -10,10 +10,6 @@ import ch.epfl.javass.net.RemotePlayerClient;
 
 /**
  * test thus non Jdoc
- *
- *
- * @author Antoine Scardigli - (299905)
- * @author Marin Nguyen - (288260)
  */
 public class NetJassGame {
     public static void main(String[] args) throws Exception {
@@ -28,7 +24,7 @@ public class NetJassGame {
                 player = new RandomPlayer(2019);
                 if(pId == PlayerId.PLAYER_2) {
                     try {
-                        player = new RemotePlayerClient("localhost", RemotePlayerClient.PORT_NUMBER);
+                        player = new RemotePlayerClient("128.179.152.134", RemotePlayerClient.PORT_NUMBER);
                         player = new PrintingPlayer(player);
                                           
                     } catch (IOException e) {
@@ -36,7 +32,7 @@ public class NetJassGame {
                     }
                 }
             }
-            player = new PacedPlayer(player, 1);
+            player = new PacedPlayer(player, 0.1);
             players.put(pId, player);
             playerNames.put(pId, pId.name());
         }
