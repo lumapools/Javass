@@ -26,6 +26,7 @@ public final class PacedPlayer implements Player {
 	 * @param minTime          (double) le temps minimum
 	 */
 	public PacedPlayer(Player underlyingPlayer, double minTime) {
+		assert !(minTime < 0);
 		this.underlyingPlayer = underlyingPlayer;
 		this.minTimeInMilliseconds = minTime * MILLIS_PER_SEC;
 	}

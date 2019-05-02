@@ -7,7 +7,7 @@ package ch.epfl.javass;
  * @author Emi Sakamoto (302290)
  *
  */
-public class Preconditions {
+public final class Preconditions {
 
 	private Preconditions() {
 	}
@@ -18,7 +18,7 @@ public class Preconditions {
 	 * @param b (boolean) condition à checker
 	 * @throws IllegalArgumentException si b est faux
 	 */
-	public static void checkArgument(boolean b) throws IllegalArgumentException {
+	public static void checkArgument(boolean b) {
 		if (!b) {
 			throw new IllegalArgumentException();
 		}
@@ -33,7 +33,7 @@ public class Preconditions {
 	 * @throws IllegalArgumentException si l'index est pas compris entre 0 (inclus)
 	 *                                  et taille (exclu)
 	 */
-	public static int checkIndex(int index, int size) throws IllegalArgumentException {
+	public static int checkIndex(int index, int size) {
 		if ((index < 0) || index >= size) {
 			throw new IndexOutOfBoundsException();
 		}

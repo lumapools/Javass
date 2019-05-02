@@ -63,7 +63,7 @@ public final class Card {
 	 * @return (Color) la couleur de la carte
 	 */
 	public Color color() {
-		return PackedCard.color(packed());
+		return PackedCard.color(packed);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public final class Card {
 	 * @return (Rang) le rang de la carte
 	 */
 	public Rank rank() {
-		return PackedCard.rank(packed());
+		return PackedCard.rank(packed);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public final class Card {
 	 *         y compris)
 	 */
 	public boolean isBetter(Color trump, Card that) {
-		return PackedCard.isBetter(trump, this.packed(), that.packed());
+		return PackedCard.isBetter(trump, packed, that.packed());
 	}
 
 	/**
@@ -96,7 +96,7 @@ public final class Card {
 	 * @return (int) la valeur de la carte
 	 */
 	public int points(Color trump) {
-		return PackedCard.points(trump, packed());
+		return PackedCard.points(trump, packed);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public final class Card {
 	 */
 	@Override
 	public boolean equals(Object that) {
-		return that instanceof Card && ((Card) that).packed() == this.packed();
+		return that instanceof Card && ((Card) that).packed() == packed;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public final class Card {
 	 */
 	@Override
 	public int hashCode() {
-		return packed();
+		return packed;
 	}
 
 	/**
@@ -120,7 +120,7 @@ public final class Card {
 	 */
 	@Override
 	public String toString() {
-		return PackedCard.toString(packed());
+		return PackedCard.toString(packed);
 	}
 
 	/**
@@ -171,9 +171,9 @@ public final class Card {
 		KING("K", 5), ACE("A", 6);
 
 		// représentation compacte du rang
-		private String representation;
+		private final String representation;
 		// la position lorsque c'est l'atout
-		private int orderTrump;
+		private final int orderTrump;
 
 		private Rank(String representation, int ordreTrump) {
 			this.representation = representation;

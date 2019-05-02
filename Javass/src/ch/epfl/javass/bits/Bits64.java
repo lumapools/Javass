@@ -80,6 +80,6 @@ public final class Bits64 {
 		if (taille > Long.SIZE - 1L) {
 			return false;
 		}
-		return Math.pow(2, taille) - 1L >= valeur;
+		return (1L << taille) - 1L >= valeur;
 	}
 }

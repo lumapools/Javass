@@ -121,7 +121,7 @@ public final class Bits32 {
 	/*
 	 * Vérifie si une paire valeur/taille est valable. Càd: Si la taille (en bits)
 	 * est plus petite que la taille en bits occupée normalement par la valeur, il
-	 * retourne fase
+	 * retourne false
 	 * 
 	 * @param valeur (int) valeur à vérifier
 	 * 
@@ -131,6 +131,6 @@ public final class Bits32 {
 	 * une paire valeur/taille
 	 */
 	private static boolean packVerify(int valeur, int taille) {
-		return Math.pow(2, taille) - 1 >= valeur && taille <= Integer.SIZE - 1;
+		return (1 << taille) - 1 >= valeur && taille <= Integer.SIZE - 1;
 	}
 }

@@ -135,7 +135,7 @@ public final class PackedTrick {
 	 */
 	public static boolean isEmpty(int pkTrick) {
 		assert isValid(pkTrick);
-		return Bits32.extract(pkTrick, BIT_START_C1, NB_BITS_FOR_CARDS) == Bits32.mask(0, NB_BITS_FOR_CARDS);
+		return !PackedCard.isValid(card(pkTrick, 0));
 	}
 
 	/**
@@ -254,62 +254,67 @@ public final class PackedTrick {
 	 * @return (long) le sous-ensemble empaqueté des cartes qui peuvent être jouées
 	 */
 	public static long playableCards(int pkTrick, long pkHand) {
-		assert isValid(pkTrick);
-		assert PackedCardSet.isValid(pkHand);
+        assert isValid(pkTrick);
+        assert PackedCardSet.isValid(pkHand);
 
-		// Si personne n'a encore joué
-		if (isEmpty(pkTrick)) {
-			return pkHand;
-		}
+        // Si personne n'a encore joué
+        if (isEmpty(pkTrick)) {
+            return pkHand;
+        }
 
-		// atout demandé
-		long trump_in_hands = PackedCardSet.subsetOfColor(pkHand, trump(pkTrick));
-		if (baseColor(pkTrick) == trump(pkTrick)) {
-			if (PackedCardSet.isEmpty(trump_in_hands)
-					|| trump_in_hands == PackedCardSet.trumpAbove(PackedCard.pack(trump(pkTrick), Rank.NINE))) {
-				return pkHand;
-			}
-			return trump_in_hands;
-		}
+        // atout demandé
+        long trump_in_hands = PackedCardSet.subsetOfColor(pkHand,
+                trump(pkTrick));
+        if (baseColor(pkTrick) == trump(pkTrick)) {
+            if (PackedCardSet.isEmpty(trump_in_hands)
+                    || trump_in_hands == PackedCardSet.trumpAbove(
+                            PackedCard.pack(trump(pkTrick), Rank.NINE))) {
+                return pkHand;
+            }
+            return trump_in_hands;
+        }
 
-		// atout pas demandé
-		int s = size(pkTrick);
-		int nb = 0;
-		for (int i = 0; i < s; ++i) {
-			if (PackedCard.color(card(pkTrick, i)).equals(trump(pkTrick))) {
-				nb = i;
-			}
-		}
-		// les atouts qui sont plus forts que celui qui a coupé, et qui sont dans mes
-		// mains
-		long betterTrump = PackedCardSet.trumpAbove(card(pkTrick, nb)) & pkHand;
-		long baseColor_in_hands = PackedCardSet.subsetOfColor(pkHand, baseColor(pkTrick));
-		// si au moins une personne a coupé
-		if (nb != 0) {
-			// n'a pas de meilleur atout
-			if (PackedCardSet.isEmpty(betterTrump)) {
-				if (PackedCardSet.isEmpty(baseColor_in_hands)) {
-					if (pkHand == trump_in_hands) {
-						return trump_in_hands;
-					}
-					return PackedCardSet.difference(pkHand, trump_in_hands);
-				}
-				return baseColor_in_hands;
-			}
-			// a de meilleur atout
-			if (PackedCardSet.isEmpty(baseColor_in_hands)) {
-				return betterTrump | PackedCardSet.difference(pkHand, trump_in_hands);
-			}
-			return betterTrump | baseColor_in_hands;
-		}
-		// personne n'a coupé, peut pas suivre
-		if (PackedCardSet.isEmpty(baseColor_in_hands)) {
-			return pkHand;
-		}
-		// personne n'a coupé, mais peut suivre
-		return baseColor_in_hands | trump_in_hands;
-	}
-
+        // atout pas demandé
+        int s = size(pkTrick);
+        int nb = 0;
+        long betterTrump = trump_in_hands;
+        for (int i = 1; i < s; ++i) {
+            if (PackedCard.color(card(pkTrick, i)).equals(trump(pkTrick))) {
+                betterTrump &= PackedCardSet.trumpAbove(card(pkTrick, i));
+                nb = i;
+            }
+        }
+        // les atouts qui sont plus forts que celui qui a coupé, et qui sont
+        // dans mes mains
+        long baseColor_in_hands = PackedCardSet.subsetOfColor(pkHand,
+                baseColor(pkTrick));
+        // si au moins une personne a coupé
+        if (nb != 0) {
+            // n'a pas de meilleur atout
+            if (PackedCardSet.isEmpty(betterTrump)) {
+                if (PackedCardSet.isEmpty(baseColor_in_hands)) {
+                    if (pkHand == trump_in_hands) {
+                        return trump_in_hands;
+                    }
+                    return PackedCardSet.difference(pkHand, trump_in_hands);
+                }
+                return baseColor_in_hands;
+            }
+            // a de meilleur atout
+            if (PackedCardSet.isEmpty(baseColor_in_hands)) {
+                return betterTrump
+                        | PackedCardSet.difference(pkHand, trump_in_hands);
+            }
+            return betterTrump | baseColor_in_hands;
+        }
+        // personne n'a coupé, peut pas suivre
+        if (PackedCardSet.isEmpty(baseColor_in_hands)) {
+            return pkHand;
+        }
+        // personne n'a coupé, mais peut suivre
+        return baseColor_in_hands | trump_in_hands;
+    }
+	
 	/**
 	 * Retourne la valeur du pli, en tenant compte des « 5 de der »
 	 * 

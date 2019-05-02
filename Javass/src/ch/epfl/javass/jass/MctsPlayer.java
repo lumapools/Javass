@@ -132,7 +132,7 @@ public final class MctsPlayer implements Player {
 
 	}
 
-	private static class Node {
+	private static final class Node {
 
 		private TurnState turnState;
 		private CardSet hand;
@@ -197,8 +197,8 @@ public final class MctsPlayer implements Player {
 		 */
 		private double computeV(int c, Node parent) {
 			return (numSimulations <= 0) ? Double.POSITIVE_INFINITY
-					: (double) totalScorePerNode / (double) numSimulations
-							+ c * Math.sqrt(2 * Math.log((double) parent.numSimulations) / (double) numSimulations);
+					: totalScorePerNode / numSimulations
+							+ c * Math.sqrt(2 * Math.log(parent.numSimulations) / numSimulations);
 		}
 
 		/*
