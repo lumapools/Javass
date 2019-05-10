@@ -164,13 +164,16 @@ public class GraphicalPlayer {
         }
         teams.put(TeamId.TEAM_1, team1);
         teams.put(TeamId.TEAM_2, team2);
+        
     }
 
     private Pane createScorePane(Map<PlayerId, String> names,
             ScoreBean scoreBean) {
+    	System.out.println(names);
 
         GridPane scorePane = new GridPane();
         for (TeamId teamId : TeamId.ALL) {
+        	
             Text team = new Text(String.format("%s et %s : ",
                     names.get(teams.get(teamId).get(0)),
                     names.get(teams.get(teamId).get(1))));
