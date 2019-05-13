@@ -16,6 +16,14 @@ import ch.epfl.javass.jass.Trick;
 
 class StringSerializerTest {
 
+	@Test
+	void serializeAndDeserializeTestWorks() {
+		assertEquals(StringSerializer.deserializeString(StringSerializer.serializeString("Bénédék")), "Bénédék");
+		assertEquals(StringSerializer.deserializeString(StringSerializer.serializeString("as.d .aàsaàd -asd$à-asàa -asd -asdà$-a sdè ad")), "as.d .aàsaàd -asd$à-asàa -asd -asdà$-a sdè ad");
+	}
+	
+	
+	
     @Test
     void serializeIntSeemsGreat() {
         Trick trick = Trick.firstEmpty(Color.HEART, PlayerId.PLAYER_3);

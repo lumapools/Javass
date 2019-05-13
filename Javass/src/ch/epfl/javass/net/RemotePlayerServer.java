@@ -38,8 +38,8 @@ public final class RemotePlayerServer {
      * les différentes méthodes doivent être appelées en fonction des messages
      * reçus via le réseau
      * 
-     * @param player (Player)
-     *            joueur local
+     * @param player
+     *            (Player) joueur local
      */
     public RemotePlayerServer(Player player) {
         this.player = player;
@@ -48,9 +48,8 @@ public final class RemotePlayerServer {
     /**
      * dans une boucle infinie :
      * 
-     * 1. attend un message du client, 
-     * 2. appelle la méthode correspondante du joueur local, et 
-     * 3. dans le cas de cardToPlay, renvoie la valeur de
+     * 1. attend un message du client, 2. appelle la méthode correspondante du
+     * joueur local, et 3. dans le cas de cardToPlay, renvoie la valeur de
      * retour au client.
      * 
      */
@@ -71,57 +70,57 @@ public final class RemotePlayerServer {
 
     // appelle la méthode correspondante du joueur local
     private void readAndCall(String s, BufferedWriter w) throws IOException {
-    	try {
-	    	if(s != null) {
-		        String[] ls = StringSerializer.split(' ', s);
-		        JassCommand msg = JassCommand.valueOf(ls[0]);
-		        switch (msg) {
-		        case PLRS:
-		            int ownId = StringSerializer.deserializeInt(ls[1]);
-		            String[] names = StringSerializer.split(',', ls[2]);
-		            Map<PlayerId, String> playerNames = new HashMap<>();
-		            for (int i = 0; i < 4; i++) {
-		                playerNames.put(PlayerId.ALL.get(i),
-		                        StringSerializer.deserializeString(names[i]));
-		            }
-		            player.setPlayers(PlayerId.ALL.get(ownId), playerNames);
-		            break;
-		        case TRMP:
-		            player.setTrump(
-		                    Color.ALL.get(StringSerializer.deserializeInt(ls[1])));
-		            break;
-		        case HAND:
-		            player.updateHand(
-		                    CardSet.ofPacked(StringSerializer.deserializeLong(ls[1])));
-		            break;
-		        case TRCK:
-		            player.updateTrick(
-		                    Trick.ofPacked(StringSerializer.deserializeInt(ls[1])));
-		            break;
-		        case CARD:
-		            String[] turnState = StringSerializer.split(',', ls[1]);
-		            Card c = player.cardToPlay(
-		                    TurnState.ofPackedComponents(
-		                            StringSerializer.deserializeLong(turnState[0]),
-		                            StringSerializer.deserializeLong(turnState[1]),
-		                            StringSerializer.deserializeInt(turnState[2])),
-		                    CardSet.ofPacked(StringSerializer.deserializeLong(ls[2])));
-		            w.write(StringSerializer.serializeInt(c.packed()));
-		            w.write('\n');
-		            w.flush();
-		            break;
-		        case SCOR:
-		            player.updateScore(
-		                    Score.ofPacked(StringSerializer.deserializeLong(ls[1])));
-		            break;
-		        case WINR:
-		            player.setWinningTeam(TeamId.ALL.get(StringSerializer.deserializeInt(ls[1])));
-		            break;
-		        }
-	    	}
-    	}catch (Exception e) {
-    		
-    	}
+        if (s != null) {
+            String[] ls = StringSerializer.split(' ', s);
+            JassCommand msg = JassCommand.valueOf(ls[0]);
+            switch (msg) {
+            case PLRS:
+                int ownId = StringSerializer.deserializeInt(ls[1]);
+                String[] names = StringSerializer.split(',', ls[2]);
+                Map<PlayerId, String> playerNames = new HashMap<>();
+                for (int i = 0; i < PlayerId.COUNT; i++) {
+                    playerNames.put(PlayerId.ALL.get(i),
+                            StringSerializer.deserializeString(names[i]));
+                }
+                player.setPlayers(PlayerId.ALL.get(ownId), playerNames);
+                break;
+            case TRMP:
+                player.setTrump(
+                        Color.ALL.get(StringSerializer.deserializeInt(ls[1])));
+                break;
+            case HAND:
+                player.updateHand(CardSet
+                        .ofPacked(StringSerializer.deserializeLong(ls[1])));
+                break;
+            case TRCK:
+                player.updateTrick(
+                        Trick.ofPacked(StringSerializer.deserializeInt(ls[1])));
+                break;
+            case CARD:
+                String[] turnState = StringSerializer.split(',', ls[1]);
+                Card c = player.cardToPlay(
+                        TurnState.ofPackedComponents(
+                                StringSerializer.deserializeLong(turnState[0]),
+                                StringSerializer.deserializeLong(turnState[1]),
+                                StringSerializer.deserializeInt(turnState[2])),
+                        CardSet.ofPacked(
+                                StringSerializer.deserializeLong(ls[2])));
+                w.write(StringSerializer.serializeInt(c.packed()));
+                w.write('\n');
+                w.flush();
+                break;
+            case SCOR:
+                player.updateScore(Score
+                        .ofPacked(StringSerializer.deserializeLong(ls[1])));
+                break;
+            case WINR:
+                player.setWinningTeam(
+                        TeamId.ALL.get(StringSerializer.deserializeInt(ls[1])));
+                break;
+            default:
+                throw new Error();
+            }
+        }
     }
 
 }

@@ -1,7 +1,5 @@
 package ch.epfl.javass.gui;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -16,71 +14,95 @@ import ch.epfl.javass.jass.Trick;
 import ch.epfl.javass.jass.TurnState;
 import javafx.application.Platform;
 
+/**
+ * Un adaptateur permettant d'adapter l'interface graphique (c-à-d la classe
+ * GraphicalPlayer) pour en faire un joueur, c-à-d une valeur de type Player
+ * 
+ * @author Benedek Hauer (301364)
+ * @author Emi Sakamoto (302290)
+ *
+ */
 public class GraphicalPlayerAdapter implements Player {
+	//constante
+	private static final int QUEUE_SIZE = 1;
+	
+	// attributs
+    private HandBean hB;
+    private ScoreBean sB;
+    private TrickBean tB;
+    private GraphicalPlayer graphicalPlayer;
+    private ArrayBlockingQueue<Card> blockQueue;
 
-	ScoreBean scoreBean;
-	HandBean handBean;
-	TrickBean trickBean;
-	GraphicalPlayer gPlayer;
-	ArrayBlockingQueue<Card> queue;
-	
-	
-	public GraphicalPlayerAdapter() {
-		scoreBean = new ScoreBean();
-		handBean = new HandBean();
-		trickBean = new TrickBean();
-		queue = new ArrayBlockingQueue<Card>(1);
-		
-	}
-	
-	@Override
-	public void setPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
-	  gPlayer = new GraphicalPlayer(ownId, playerNames, scoreBean, trickBean, handBean, queue);
-	  Platform.runLater(() -> { gPlayer.createStage().show(); });
-	}
-	
-	@Override
-	public void updateHand(CardSet newHand) {
-		Platform.runLater(() -> {handBean.setHand(newHand);});
-	}
-	
-	@Override
-	public void setTrump(Color trump) {
-		Platform.runLater(() -> {trickBean.setTrump(trump);});
-	}
-	
-	@Override
-	public void updateTrick(Trick newTrick) {
-		Platform.runLater(() -> {trickBean.setTrick(newTrick);});
-	}
-	
-	@Override
-	public void updateScore(Score score) {
-		Platform.runLater(() -> {
-			for(TeamId teamId : TeamId.ALL) {
-				scoreBean.setGamePoints(teamId, score.gamePoints(teamId));
-				scoreBean.setTurnPoints(teamId, score.turnPoints(teamId));
-				scoreBean.setTotalPoints(teamId, score.totalPoints(teamId));
-			}
-		});
-	}
-	
-	@Override
-	public void setWinningTeam(TeamId teamId) {
-		Platform.runLater(() -> {scoreBean.setWinningTeam(teamId);});
-	}
-	
-	@Override
+    public GraphicalPlayerAdapter() {
+        hB = new HandBean();
+        sB = new ScoreBean();
+        tB = new TrickBean();
+        blockQueue = new ArrayBlockingQueue<Card>(QUEUE_SIZE);
+    }
+
+    @Override
+    public void setPlayers(PlayerId ownId, Map<PlayerId, String> playerNames) {
+        graphicalPlayer = new GraphicalPlayer(ownId, playerNames, sB, tB, hB,
+                blockQueue);
+        Platform.runLater(() -> {
+            graphicalPlayer.createStage().show();
+        });
+    }
+
+    @Override
+    public void updateHand(CardSet newHand) {
+        Platform.runLater(() -> {
+            hB.setHand(newHand);
+        });
+    }
+
+    @Override
+    public void setTrump(Color trump) {
+        Platform.runLater(() -> {
+            tB.setTrump(trump);
+        });
+    }
+
+    @Override
+    public void updateTrick(Trick newTrick) {
+        Platform.runLater(() -> {
+            tB.setTrick(newTrick);
+        });
+    }
+
+    @Override
+    public void updateScore(Score score) {
+        Platform.runLater(() -> {
+            for (TeamId team : TeamId.ALL) {
+                sB.setGamePoints(team, score.gamePoints(team));
+                sB.setTotalPoints(team, score.totalPoints(team));
+                sB.setTurnPoints(team, score.turnPoints(team));
+            }
+        });
+    }
+
+    @Override
+    public void setWinningTeam(TeamId winningTeam) {
+        Platform.runLater(() -> {
+            sB.setWinningTeam(winningTeam);
+        });
+
+    }
+
+    @Override
     public Card cardToPlay(TurnState state, CardSet hand) {
-        handBean.setPlayableCards(state.trick().playableCards(hand));
+        Platform.runLater(() -> {
+            hB.setPlayableCards(state.trick().playableCards(hand));
+        });
         try {
-            Card c = queue.take();
-            handBean.setPlayableCards(state.trick().playableCards(CardSet.EMPTY));
+            Card c = blockQueue.take();
+            Platform.runLater(() -> {
+                hB.setPlayableCards(CardSet.EMPTY);
+            });
             return c;
         } catch (InterruptedException e) {
             throw new Error();
         }
     }
-	
 
 }

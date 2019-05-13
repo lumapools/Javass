@@ -12,8 +12,8 @@ import javafx.beans.property.SimpleObjectProperty;
  * un bean JavaFX contenant (principalement) les scores et doté des propriétés
  * suivantes :
  * 
- * turnPoints, qui contient les points du tour, gamePoints, qui contient les
- * points de la partie, totalPoints, qui contient le total des points,
+ * turnPoints, qui contient les points du tour; gamePoints, qui contient les
+ * points de la partie; totalPoints, qui contient le total des points;
  * winningTeam, qui contient l'identité de l'équipe ayant gagné la partie
  * 
  * @author Benedek Hauer (301364)
@@ -30,8 +30,16 @@ public final class ScoreBean {
     private IntegerProperty totalPoints_team1 = new SimpleIntegerProperty();
     private IntegerProperty totalPoints_team2 = new SimpleIntegerProperty();
 
-    private ObjectProperty<TeamId> winningTeam = new SimpleObjectProperty<>(null);
+    private ObjectProperty<TeamId> winningTeam = new SimpleObjectProperty<>(
+            null);
 
+    /**
+     * Permet d'obtenir la propriété turnPoints de l'équipe correspondante
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @return (ReadOnlyIntegerProperty) la propriété en question
+     */
     public ReadOnlyIntegerProperty turnPointsProperty(TeamId team) {
         if (team.equals(TeamId.TEAM_1)) {
             return turnPoints_team1;
@@ -39,6 +47,14 @@ public final class ScoreBean {
         return turnPoints_team2;
     }
 
+    /**
+     * Permet de modifier la valeur que la propriété turnPoints contient
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @param newTurnPoints
+     *            (int) les nouveaux turnPoints
+     */
     public void setTurnPoints(TeamId team, int newTurnPoints) {
         if (team.equals(TeamId.TEAM_1)) {
             turnPoints_team1.set(newTurnPoints);
@@ -47,6 +63,13 @@ public final class ScoreBean {
         }
     }
 
+    /**
+     * Permet d'obtenir la propriété gamePoints de l'équipe correspondante
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @return (ReadOnlyIntegerProperty) la propriété en question
+     */
     public ReadOnlyIntegerProperty gamePointsProperty(TeamId team) {
         if (team.equals(TeamId.TEAM_1)) {
             return gamePoints_team1;
@@ -54,6 +77,14 @@ public final class ScoreBean {
         return gamePoints_team2;
     }
 
+    /**
+     * Permet de modifier la valeur que la propriété gamePoints contient
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @param newGamePoints
+     *            (int) les nouveaux gamePoints
+     */
     public void setGamePoints(TeamId team, int newGamePoints) {
         if (team.equals(TeamId.TEAM_1)) {
             gamePoints_team1.set(newGamePoints);
@@ -62,6 +93,13 @@ public final class ScoreBean {
         }
     }
 
+    /**
+     * Permet d'obtenir la propriété totalPoints de l'équipe correspondante
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @return (ReadOnlyIntegerProperty) la propriété en question
+     */
     public ReadOnlyIntegerProperty totalPointsProperty(TeamId team) {
         if (team.equals(TeamId.TEAM_1)) {
             return totalPoints_team1;
@@ -69,6 +107,14 @@ public final class ScoreBean {
         return totalPoints_team2;
     }
 
+    /**
+     * Permet de modifier la valeur que la propriété totalPoints contient
+     * 
+     * @param team
+     *            (TeamId) l'équipe correspondante
+     * @param newTotalPoints
+     *            (int) les nouveaux totalPoints
+     */
     public void setTotalPoints(TeamId team, int newTotalPoints) {
         if (team.equals(TeamId.TEAM_1)) {
             totalPoints_team1.set(newTotalPoints);
@@ -77,10 +123,22 @@ public final class ScoreBean {
         }
     }
 
+    /**
+     * Permet d'obtenir la propriété winningTeam (qui est nulle tant que la
+     * partie n'est pas terminée)
+     * 
+     * @return (ReadOnlyIntegerProperty) la propriété en question
+     */
     public ReadOnlyObjectProperty<TeamId> winningTeamProperty() {
         return winningTeam;
     }
 
+    /**
+     * Permet de modifier la valeur que la propriété winningTeam contient
+     * 
+     * @param winningTeam
+     *            (int) l'équipe gagnante
+     */
     public void setWinningTeam(TeamId winningTeam) {
         this.winningTeam.set(winningTeam);
     }

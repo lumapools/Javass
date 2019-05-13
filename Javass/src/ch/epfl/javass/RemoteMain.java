@@ -1,29 +1,40 @@
 package ch.epfl.javass;
 
-
 import ch.epfl.javass.gui.GraphicalPlayerAdapter;
-import ch.epfl.javass.jass.Player;
 import ch.epfl.javass.net.RemotePlayerServer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class RemoteMain extends Application{
-	
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
+/**
+ * Contient le programme principal permettant de jouer à une partie distante
+ * 
+ * @author Benedek Hauer (301364)
+ * @author Emi Sakamoto (302290)
+ *
+ */
+public class RemoteMain extends Application {
+    /**
+     * Appelle la méthode launch de Application
+     * 
+     * @param args
+     *            Arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-        Thread serverThread = new Thread(() -> {
-        	Player player = new GraphicalPlayerAdapter();
-            RemotePlayerServer serverPlayer =  new RemotePlayerServer(player);
-            System.out.println("La partie commencera à la connexion du client…");
-            serverPlayer.run();
-            System.out.println("ERROR");
-        	});
-		serverThread.setDaemon(true);
-		serverThread.start();
-	}
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Thread remoteThread = new Thread(() -> {
+            RemotePlayerServer pl = new RemotePlayerServer(
+                    new GraphicalPlayerAdapter());
+            System.out.println(
+                    "La partie commencera à la connexion du client...");
+            pl.run();
+        });
+        remoteThread.setDaemon(true);
+        remoteThread.start();
+
+    }
 
 }

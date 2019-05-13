@@ -15,7 +15,7 @@ import javafx.collections.ObservableMap;
 /**
  * un bean JavaFX contenant le pli courant et doté de trois propriétés :
  * 
- * trump, qui contient l'atout courant, trick, qui contient le pli courant,
+ * trump, qui contient l'atout courant; trick, qui contient le pli courant;
  * winningPlayer, qui contient le joueur menant le pli courant
  * 
  * @author Benedek Hauer (301364)
@@ -28,33 +28,68 @@ public final class TrickBean {
             FXCollections.observableHashMap());
     private ObjectProperty<PlayerId> winningPlayer = new SimpleObjectProperty<>();
 
+    /**
+     * Permet d'obtenir la propriété trump contenant une valeur de type Color
+     * 
+     * @return (ReadOnlyObjectProperty(Color)) la propriété en question
+     */
     public ReadOnlyObjectProperty<Color> trumpProperty() {
         return trump;
     }
 
+    /**
+     * Permet de modifier la propriété trump contenant une valeur de type Color
+     * 
+     * @param trump
+     *            (Color) l'atout
+     */
     public void setTrump(Color trump) {
         this.trump.set(trump);
     }
 
+    /**
+     * Permet d'obtenir la propriété trick contenant le pli courant exposer
+     * comme une table associative associant à chaque joueur la carte qu'il a
+     * joué dans le pli courant, qui est nulle si le joueur en question n'a pas
+     * encore joué
+     * 
+     * @return (ObservableMap(PlayerId, Card)) la propriété en question
+     */
     public ObservableMap<PlayerId, Card> trickProperty() {
         return FXCollections.unmodifiableObservableMap(
                 (ObservableMap<PlayerId, Card>) trick.get());
     }
 
-    public void setTrick(Trick newTrick) { 
-        for(int i = 0; i < PlayerId.COUNT; ++i ) {
+    /**
+     * Permet de modifier la propriété trick en prenant un argument de type
+     * Trick et se charge de modifier en fonction de la table associative
+     * contenant le pli Cette méthode se charge également de changer celle de la
+     * propriété winningPlayer, qui est une propriété en lecture seule pour
+     * laquelle aucune méthode de modification (setter) n'existe.
+     * 
+     * @param newTrick
+     *            (Trick) nouveau pli
+     */
+    public void setTrick(Trick newTrick) {
+        for (int i = 0; i < PlayerId.COUNT; ++i) {
             trick.get().put(PlayerId.ALL.get(i), null);
         }
-        if(newTrick.isEmpty()) {
+        if (newTrick.isEmpty()) {
             winningPlayer.set(null);
-        }else {
+        } else {
             winningPlayer.set(newTrick.winningPlayer());
-            for(int i = 0; i < newTrick.size(); i++) {
+            for (int i = 0; i < newTrick.size(); i++) {
                 trick.get().replace(newTrick.player(i), newTrick.card(i));
             }
         }
     }
 
+    /**
+     * Permet d'obtenir la propriété winningPlayer contenant une valeur de type
+     * PlayerId
+     * 
+     * @return (ReadOnlyObjectProperty(PlayerId)) la propriété en question
+     */
     public ReadOnlyObjectProperty<PlayerId> winningPlayerProperty() {
         return winningPlayer;
     }
