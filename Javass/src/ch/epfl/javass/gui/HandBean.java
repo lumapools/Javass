@@ -1,14 +1,8 @@
 package ch.epfl.javass.gui;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import ch.epfl.javass.jass.Card;
 import ch.epfl.javass.jass.CardSet;
 import ch.epfl.javass.jass.Jass;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -25,11 +19,8 @@ import javafx.collections.ObservableSet;
  *
  */
 public final class HandBean {
-    private ObjectProperty<List<Card>> hand = new SimpleObjectProperty<>(
-            FXCollections.observableArrayList(
-                    Arrays.asList(new Card[Jass.HAND_SIZE])));
-    private ObjectProperty<Set<Card>> playableCards = new SimpleObjectProperty<>(
-            FXCollections.observableSet());
+    private final ObservableList<Card> hand = FXCollections.observableArrayList(new Card[Jass.HAND_SIZE]);
+    private final ObservableSet<Card> playableCards = FXCollections.observableSet();
 
     /**
      * Permet d'obtenir la propriété hand (List)
@@ -38,7 +29,7 @@ public final class HandBean {
      */
     public ObservableList<Card> handProperty() {
         return FXCollections
-                .unmodifiableObservableList((ObservableList<Card>) hand.get());
+                .unmodifiableObservableList(hand);
     }
 
     /**
@@ -54,12 +45,12 @@ public final class HandBean {
     public void setHand(CardSet newHand) {
         if (newHand.size() == Jass.HAND_SIZE) {
             for (int i = 0; i < Jass.HAND_SIZE; i++) {
-                hand.get().set(i, newHand.get(i));
+                hand.set(i, newHand.get(i));
             }
         } else {
-            for (Card c : hand.get()) {
+            for (Card c : hand) {
                 if (c != null && !newHand.contains(c)) {
-                    hand.get().set(hand.get().indexOf(c), null);
+                    hand.set(hand.indexOf(c), null);
                 }
             }
         }
@@ -72,7 +63,7 @@ public final class HandBean {
      */
     public ObservableSet<Card> playableCardsProperty() {
         return FXCollections.unmodifiableObservableSet(
-                (ObservableSet<Card>) playableCards.get());
+                (ObservableSet<Card>) playableCards);
     }
 
     /**
@@ -83,9 +74,9 @@ public final class HandBean {
      *            (CardSet) nouvelles cartes jouables
      */
     public void setPlayableCards(CardSet newPlayableCards) {
-        playableCards.get().clear();
+        playableCards.clear();
         for (int i = 0; i < newPlayableCards.size(); i++) {
-            playableCards.get().add(newPlayableCards.get(i));
+            playableCards.add(newPlayableCards.get(i));
         }
     }
 }

@@ -13,7 +13,7 @@ import java.util.Base64;
  */
 public final class StringSerializer {
     private static final int BASE_16 = 16;
-    
+
     private StringSerializer() {
     }
 
@@ -50,8 +50,7 @@ public final class StringSerializer {
      * @return (String) la chaine sérialisée
      */
     public static String serializeString(String s) {
-        return new String(
-                Base64.getEncoder().encode(s.getBytes(StandardCharsets.UTF_8)));
+        return Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -102,7 +101,7 @@ public final class StringSerializer {
      */
     public static String deserializeString(String s) {
         return new String(
-                Base64.getDecoder().decode(s.getBytes(StandardCharsets.UTF_8)));
+                Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
     }
 
     /**

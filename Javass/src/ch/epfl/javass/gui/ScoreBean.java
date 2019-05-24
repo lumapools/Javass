@@ -21,16 +21,16 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  */
 public final class ScoreBean {
-    private IntegerProperty turnPoints_team1 = new SimpleIntegerProperty();
-    private IntegerProperty turnPoints_team2 = new SimpleIntegerProperty();
+    private final IntegerProperty turnPoints_team1 = new SimpleIntegerProperty();
+    private final IntegerProperty turnPoints_team2 = new SimpleIntegerProperty();
 
-    private IntegerProperty gamePoints_team1 = new SimpleIntegerProperty();
-    private IntegerProperty gamePoints_team2 = new SimpleIntegerProperty();
+    private final IntegerProperty gamePoints_team1 = new SimpleIntegerProperty();
+    private final IntegerProperty gamePoints_team2 = new SimpleIntegerProperty();
 
-    private IntegerProperty totalPoints_team1 = new SimpleIntegerProperty();
-    private IntegerProperty totalPoints_team2 = new SimpleIntegerProperty();
+    private final IntegerProperty totalPoints_team1 = new SimpleIntegerProperty();
+    private final IntegerProperty totalPoints_team2 = new SimpleIntegerProperty();
 
-    private ObjectProperty<TeamId> winningTeam = new SimpleObjectProperty<>(
+    private final ObjectProperty<TeamId> winningTeam = new SimpleObjectProperty<>(
             null);
 
     /**

@@ -1,7 +1,5 @@
 package ch.epfl.javass.gui;
 
-import java.util.Map;
-
 import ch.epfl.javass.jass.Card;
 import ch.epfl.javass.jass.Card.Color;
 import ch.epfl.javass.jass.PlayerId;
@@ -23,10 +21,9 @@ import javafx.collections.ObservableMap;
  *
  */
 public final class TrickBean {
-    private ObjectProperty<Color> trump = new SimpleObjectProperty<>();
-    private ObjectProperty<Map<PlayerId, Card>> trick = new SimpleObjectProperty<>(
-            FXCollections.observableHashMap());
-    private ObjectProperty<PlayerId> winningPlayer = new SimpleObjectProperty<>();
+    private final ObjectProperty<Color> trump = new SimpleObjectProperty<>();
+    private final ObservableMap<PlayerId, Card> trick = FXCollections.observableHashMap();
+    private final ObjectProperty<PlayerId> winningPlayer = new SimpleObjectProperty<>();
 
     /**
      * Permet d'obtenir la propriété trump contenant une valeur de type Color
@@ -57,7 +54,7 @@ public final class TrickBean {
      */
     public ObservableMap<PlayerId, Card> trickProperty() {
         return FXCollections.unmodifiableObservableMap(
-                (ObservableMap<PlayerId, Card>) trick.get());
+                (ObservableMap<PlayerId, Card>) trick);
     }
 
     /**
@@ -72,14 +69,14 @@ public final class TrickBean {
      */
     public void setTrick(Trick newTrick) {
         for (int i = 0; i < PlayerId.COUNT; ++i) {
-            trick.get().put(PlayerId.ALL.get(i), null);
+            trick.put(PlayerId.ALL.get(i), null);
         }
         if (newTrick.isEmpty()) {
             winningPlayer.set(null);
         } else {
             winningPlayer.set(newTrick.winningPlayer());
             for (int i = 0; i < newTrick.size(); i++) {
-                trick.get().replace(newTrick.player(i), newTrick.card(i));
+                trick.replace(newTrick.player(i), newTrick.card(i));
             }
         }
     }
